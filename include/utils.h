@@ -8,11 +8,6 @@
 #define SPARROW_UTILS_H
 
 /* ~ INCLUDE ~ */
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include "vm.h"
-#include "parser.h"
 #include "common.h"
 
 /* ~ MEM Manager ~ */
@@ -48,7 +43,7 @@ typedef struct {
 } String;
 
 // 字符串缓冲区
-typedef struct {
+typedef struct charValue {
     uint32_t length;
     char start[];   // 柔性数组
 } CharValue;

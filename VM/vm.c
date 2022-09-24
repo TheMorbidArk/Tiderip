@@ -2,9 +2,8 @@
 // @description: 定义 VM 相关函数     //
 
 /* ~ INCLUDE ~ */
-#include <stdlib.h>
-#include <utils.h>
 #include "vm.h"
+#include <stdlib.h>
 
 /* ~ Functions ~ */
 /** InitVM
@@ -12,6 +11,7 @@
  * @param vm VM 指针
  */
 void InitVM(VM* vm) {
+    vm->allObjects = NULL;
     vm->allocatedBytes = 0;
     vm->curParser = NULL;
 }

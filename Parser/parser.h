@@ -7,6 +7,7 @@
 /* ~ INCLUDE ~ */
 #include "common.h"
 #include "vm.h"
+#include "class.h"
 
 /* ~ Token DATA Type ~ */
 
@@ -93,6 +94,7 @@ typedef struct {
     const char* start;      // Token String
     uint32_t length;        // Token 长度
     uint32_t lineNo;        // 行号
+    Value value;
 } Token;
 
 struct parser {
@@ -102,6 +104,7 @@ struct parser {
     char curChar;                           // 当前识别的字符
     Token curToken;                         // 已经识别出来的 Token
     Token preToken;                         // 前一个被识别出的 Token
+    ObjModule* curModule;                   // 当前正在编译的模块
 
     //处于内嵌表达式之中时,期望的右括号数量.
     int interpolationExpectRightParenNum;   // 用于跟踪小括号对儿的嵌套
@@ -121,6 +124,6 @@ void ConsumeCurToken(Parser* parser, TokenType expected, const char* errMsg);
 void ConsumeNextToken(Parser* parser, TokenType expected, const char* errMsg);
 uint32_t GetByteNumOfEncodeUtf8(int value);
 uint8_t EncodeUtf8(uint8_t* buf, int value);
-void InitParser(VM* vm, Parser* parser, const char* file, const char* sourceCode);
+void InitParser(VM* vm, Parser* parser, const char* file, const char* sourceCode, ObjModule* objModule);
 
 #endif //SPARROW_PARSER_H

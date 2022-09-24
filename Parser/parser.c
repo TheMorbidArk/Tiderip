@@ -2,12 +2,15 @@
 // @description:                           //
 
 /* ~ INCLUDE ~ */
-#include <string.h>
-#include <ctype.h>
 #include "parser.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "common.h"
 #include "utils.h"
 #include "unicodeUtf8.h"
+#include <string.h>
+#include "obj_string.h"
+#include <ctype.h>
 
 /** ParseUnicodeCodePoint
  * 解析unicode码点
@@ -158,6 +161,57 @@ static void ParseId(Parser *parser, TokenType type) {
         parser->curToken.type = IdOrKeyWord(parser->curToken.start, length);
     }
     parser->curToken.length = length;
+}
+
+//解析十六进制数字
+static void ParseHexNum(Parser* parser) {
+    while (isxdigit(parser->curChar)) {
+        GetNextChar(parser);
+    }
+}
+
+//解析十进制数字
+static void ParseDecNum(Parser* parser) {
+    while (isdigit(parser->curChar)) {
+        GetNextChar(parser);
+    }
+
+    //若有小数点
+    if (parser->curChar == '.' && isdigit(LookAheadChar(parser))) {
+        GetNextChar(parser);
+        while (isdigit(parser->curChar)) { //解析小数点之后的数字
+            GetNextChar(parser);
+        }
+    }
+}
+
+//解析八进制
+static void ParseOctNum(Parser* parser) {
+    while(parser->curChar >= '0' && parser->curChar < '8') {
+        GetNextChar(parser);
+    }
+}
+
+//解析八进制 十进制 十六进制 仅支持前缀形式,后缀形式不支持
+static void ParseNum(Parser* parser) {
+    //十六进制的0x前缀
+    if (parser->curChar == '0' && MatchNextChar(parser, 'x')) {
+        GetNextChar(parser);  //跳过'x'
+        ParseHexNum(parser);   //解析十六进制数字
+        parser->curToken.value =
+                NUM_TO_VALUE(strtol(parser->curToken.start, NULL, 16));
+    } else if (parser->curChar == '0'
+               && isdigit(LookAheadChar(parser))) {  // 八进制
+        ParseOctNum(parser);
+        parser->curToken.value = NUM_TO_VALUE(strtol(parser->curToken.start, NULL, 8));
+    } else {	  //解析十进制
+        ParseDecNum(parser);
+        parser->curToken.value = NUM_TO_VALUE(strtod(parser->curToken.start, NULL));
+    }
+    //nextCharPtr会指向第1个不合法字符的下一个字符,因此-1
+    parser->curToken.length =
+            (uint32_t)(parser->nextCharPtr - parser->curToken.start - 1);
+    parser->curToken.type = TOKEN_NUM;
 }
 
 /** ParseString
@@ -436,7 +490,9 @@ void GetNextToken(Parser *parser) {
                 // 首字符是字母或'_'则是变量名
                 if (isalpha(parser->curChar) || parser->curChar == '_') {
                     ParseId(parser, TOKEN_UNKNOWN);  // 解析变量名其余的部分
-                } else {
+                }else if(isdigit(parser->curChar)){
+                    ParseNum(parser);
+                }else {
                     // 跳过 '魔数'
                     if (parser->curChar == '#' && MatchNextChar(parser, '!')) {
                         SkipALine(parser);
@@ -500,7 +556,7 @@ void ConsumeNextToken(Parser* parser, TokenType expected, const char* errMsg) {
  * @param file 源文件名
  * @param sourceCode 源码串
  */
-void InitParser(VM* vm, Parser* parser, const char* file, const char* sourceCode) {
+void InitParser(VM* vm, Parser* parser, const char* file, const char* sourceCode, ObjModule* objModule) {
     parser->file = file;
     parser->sourceCode = sourceCode;
     parser->curChar = *parser->sourceCode;
@@ -512,6 +568,7 @@ void InitParser(VM* vm, Parser* parser, const char* file, const char* sourceCode
     parser->preToken = parser->curToken;
     parser->interpolationExpectRightParenNum = 0;
     parser->vm = vm;
+    parser->curModule = objModule;
 }
 
 

@@ -6,11 +6,16 @@
 
 /* ~ INCLUDE ~ */
 #include "common.h"
+#include "class.h"
+#include "parser.h"
 
 /* ~ VM ~ */
 struct vm{
-    uint32_t allocatedBytes;    // 已分配的内存量
-    Parser * curParser;         // 当前的词法分析器
+    Class* stringClass;
+    Class* fnClass;
+    uint32_t allocatedBytes;  //累计已分配的内存量
+    struct objHeader *allObjects;    //所有已分配对象链表
+    Parser* curParser;  //当前词法分析器
 };
 
 void InitVM(VM* vm);
