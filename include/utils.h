@@ -11,47 +11,49 @@
 #include "common.h"
 
 /* ~ MEM Manager ~ */
-void *MemManager(VM *vm, void *ptr, uint32_t oldSize, uint32_t newSize);
+void *MemManager( VM *vm, void *ptr, uint32_t oldSize, uint32_t newSize );
 
 // 分配 TYPE 类型的内存块
-#define ALLOCATE(vmPtr, type) \
+#define ALLOCATE( vmPtr, type ) \
    (type*)MemManager(vmPtr, NULL, 0, sizeof(type))
 
 // 分配 除主类型 mainType 外还需要额外分配的内存块 -> sizeof(mainType) + extraSize
-#define ALLOCATE_EXTRA(vmPtr, mainType, extraSize) \
+#define ALLOCATE_EXTRA( vmPtr, mainType, extraSize ) \
    (mainType*)MemManager(vmPtr, NULL, 0, sizeof(mainType) + extraSize)
 
 // 为数组分配内存
-#define ALLOCATE_ARRAY(vmPtr, type, count) \
+#define ALLOCATE_ARRAY( vmPtr, type, count ) \
    (type*)MemManager(vmPtr, NULL, 0, sizeof(type) * count)
 
 // 释放数组的内存
-#define DEALLOCATE_ARRAY(vmPtr, arrayPtr, count) \
+#define DEALLOCATE_ARRAY( vmPtr, arrayPtr, count ) \
    MemManager(vmPtr, arrayPtr, sizeof(arrayPtr[0]) * count, 0)
 
 // 释放内存
-#define DEALLOCATE(vmPtr, memPtr) \
+#define DEALLOCATE( vmPtr, memPtr ) \
    MemManager(vmPtr, memPtr, 0, 0)
 
-uint32_t CeilToPowerOf2(uint32_t v);
+uint32_t CeilToPowerOf2( uint32_t v );
 
 /* ~DATA BUFFER~ */
 // String 类型
-typedef struct {
-    char *str;
-    uint32_t length;
+typedef struct
+{
+	char *str;
+	uint32_t length;
 } String;
 
 // 字符串缓冲区
-typedef struct charValue {
-    uint32_t length;
-    char start[];   // 柔性数组
+typedef struct charValue
+{
+	uint32_t length;
+	char start[];   // 柔性数组
 } CharValue;
 
 #define DEFAULT_BUfFER_SIZE 512
 
 // type##Buffer 声明
-#define DECLARE_BUFFER_TYPE(type)   \
+#define DECLARE_BUFFER_TYPE( type )   \
     typedef struct{                 \
         /* 数据缓冲区 */             \
         type *datas;                \
@@ -66,7 +68,7 @@ typedef struct charValue {
     void type##BufferClear(VM* vm, type##Buffer* buf);
 
 // type##Buffer 定义
-#define DEFINE_BUFFER_METHOD(type) \
+#define DEFINE_BUFFER_METHOD( type ) \
    /** type##BufferInit
     * 初始化 Buffer
     * @param buf Buffer 指针
@@ -126,43 +128,43 @@ typedef uint8_t Byte;
 typedef char Char;
 typedef int Int;
 
-DECLARE_BUFFER_TYPE(String)
+DECLARE_BUFFER_TYPE( String )
 
-DECLARE_BUFFER_TYPE(Int)
+DECLARE_BUFFER_TYPE( Int )
 
-DECLARE_BUFFER_TYPE(Char)
+DECLARE_BUFFER_TYPE( Char )
 
-DECLARE_BUFFER_TYPE(Byte)
+DECLARE_BUFFER_TYPE( Byte )
 
 /* ~ ERROR ~ */
 
-typedef enum {
-    ERROR_IO,
-    ERROR_MEM,
-    ERROR_LEX,
-    ERROR_COMPILE,
-    ERROR_RUNTIME
+typedef enum
+{
+	ERROR_IO,
+	ERROR_MEM,
+	ERROR_LEX,
+	ERROR_COMPILE,
+	ERROR_RUNTIME
 } ErrorType;
 
-void ErrorReport(void *parser, ErrorType errorType, const char *fmt, ...);
+void ErrorReport( void *parser, ErrorType errorType, const char *fmt, ... );
 
-void SymbolTableClear(VM *, SymbolTable *buffer);
+void SymbolTableClear( VM *, SymbolTable *buffer );
 
 // 相关报错的宏定义
-#define IO_ERROR(...)\
+#define IO_ERROR( ... )\
     ErrorReport(NULL, ERROR_IO, __VA_ARGS__)
 
-#define MEM_ERROR(...)\
+#define MEM_ERROR( ... )\
     ErrorReport(NULL, ERROR_MEM, __VA_ARGS__)
 
-#define LEX_ERROR(parser, ...)\
+#define LEX_ERROR( parser, ... )\
     ErrorReport(parser, ERROR_LEX, __VA_ARGS__)
 
-#define COMPILE_ERROR(parser, ...)\
+#define COMPILE_ERROR( parser, ... )\
     ErrorReport(parser, ERROR_COMPILE, __VA_ARGS__)
 
-#define RUN_ERROR(...)\
+#define RUN_ERROR( ... )\
     ErrorReport(NULL, ERROR_RUNTIME, __VA_ARGS__)
-
 
 #endif //SPARROW_UTILS_H

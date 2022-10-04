@@ -7,12 +7,13 @@
 
 #include "class.h"
 
-typedef struct {
-    ObjHeader objHeader;
-    int from;
-    int to;
-}ObjRange;
+typedef struct
+{
+	ObjHeader objHeader;
+	int from;
+	int to;
+} ObjRange;
 
-ObjRange *NewObjRange(VM *vm, int from, int to);
+ObjRange *NewObjRange( VM *vm, int from, int to );
 
 #endif //VANTIDEL_OBJ_RANGE_H

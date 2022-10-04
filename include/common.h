@@ -29,22 +29,22 @@ typedef struct class Class;
  */
 #ifdef DEBUG
 #define ASSERT(condition, errMsg) \
-      do {\
-     if (!(condition)) {\
-        fprintf(stderr, "ASSERT failed! %s:%d In function %s(): %s\n", \
-           __FILE__, __LINE__, __func__, errMsg); \
-        abort();\
-     }\
-      } while (0);
+	  do {\
+	 if (!(condition)) {\
+		fprintf(stderr, "ASSERT failed! %s:%d In function %s(): %s\n", \
+		   __FILE__, __LINE__, __func__, errMsg); \
+		abort();\
+	 }\
+	  } while (0);
 #else
-#define ASSERT(condition, errMsg) ((void)0)
+#define ASSERT( condition, errMsg ) ((void)0)
 #endif
 
 /** NOT_REACHED
  * 不可能到达的程序
  * 某些程序分支不可达，若被执行到则触发宏 NOT_REACHED
  */
-#define NOT_REACHED()\
+#define NOT_REACHED( )\
    do {\
       fprintf(stderr, "NOT_REACHED: %s:%d In function %s()\n", \
      __FILE__, __LINE__, __func__);\

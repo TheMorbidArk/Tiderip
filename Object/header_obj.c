@@ -6,7 +6,7 @@
 #include "class.h"
 #include "vm.h"
 
-DEFINE_BUFFER_METHOD(Value);
+DEFINE_BUFFER_METHOD( Value );
 
 /** InitObjHeader
  * 初始化对象头 -> ObjectHeader
@@ -15,10 +15,11 @@ DEFINE_BUFFER_METHOD(Value);
  * @param objType Object 类型
  * @param class Class 指针
  */
-void InitObjHeader(VM* vm, ObjHeader* objHeader, ObjType objType, Class* class){
-    objHeader->type = objType;
-    objHeader->isDark = false;
-    objHeader->class = class;    //设置meta类
-    objHeader->next = vm->allObjects;
-    vm->allObjects = objHeader;
+void InitObjHeader( VM *vm, ObjHeader *objHeader, ObjType objType, Class *class )
+{
+	objHeader->type = objType;
+	objHeader->isDark = false;
+	objHeader->class = class;    //设置meta类
+	objHeader->next = vm->allObjects;
+	vm->allObjects = objHeader;
 }

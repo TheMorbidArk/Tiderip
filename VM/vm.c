@@ -10,21 +10,24 @@
  * 初始化虚拟机
  * @param vm VM 指针
  */
-void InitVM(VM* vm) {
-    vm->allObjects = NULL;
-    vm->allocatedBytes = 0;
-    vm->curParser = NULL;
+void InitVM( VM *vm )
+{
+	vm->allObjects = NULL;
+	vm->allocatedBytes = 0;
+	vm->curParser = NULL;
 }
 
 /** NewVM
  * 创建 VM
  * @return VM* VM指针 -> new VM
  */
-VM* NewVM() {
-    VM* vm = (VM*)malloc(sizeof(VM));
-    if (vm == NULL) {
-        MEM_ERROR("allocate VM failed!");
-    }
-    InitVM(vm);
-    return vm;
+VM *NewVM( )
+{
+	VM *vm = ( VM * )malloc( sizeof( VM ));
+	if ( vm == NULL)
+	{
+		MEM_ERROR( "allocate VM failed!" );
+	}
+	InitVM( vm );
+	return vm;
 }
