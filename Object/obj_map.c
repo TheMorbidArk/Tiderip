@@ -13,7 +13,7 @@
  * @param vm VM 指针
  * @return ObjMap* -> ObjMap 指针 -> Map对象指针
  */
-ObjMap *NewMap( VM *vm )
+ObjMap *NewObjMap( VM *vm )
 {
 	ObjMap *objMap = ALLOCATE( vm, ObjMap );
 	InitObjHeader( vm, &objMap->objHeader, OT_MAP, vm->mapClass );

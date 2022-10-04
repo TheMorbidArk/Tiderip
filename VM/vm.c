@@ -2,8 +2,9 @@
 // @description: 定义 VM 相关函数     //
 
 /* ~ INCLUDE ~ */
-#include "vm.h"
 #include <stdlib.h>
+#include "vm.h"
+#include "core.h"
 
 /* ~ Functions ~ */
 /** InitVM
@@ -12,8 +13,11 @@
  */
 void InitVM( VM *vm )
 {
-	vm->allObjects = NULL;
 	vm->allocatedBytes = 0;
+	vm->allObjects = NULL;
+	vm->curParser = NULL;
+	StringBufferInit( &vm->allMethodNames );
+	vm->allModules = NewObjMap( vm );
 	vm->curParser = NULL;
 }
 
@@ -29,5 +33,6 @@ VM *NewVM( )
 		MEM_ERROR( "allocate VM failed!" );
 	}
 	InitVM( vm );
+	BuildCore( vm );
 	return vm;
 }

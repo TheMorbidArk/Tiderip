@@ -23,7 +23,7 @@ typedef struct
 	Entry *entries;     // Entry数组
 } ObjMap;               // Map 对象
 
-ObjMap *NewMap( VM *vm );
+ObjMap *NewObjMap( VM *vm );
 void MapSet( VM *vm, ObjMap *objMap, Value key, Value value );
 Value MapGet( ObjMap *objMap, Value key );
 void ClearMap( VM *vm, ObjMap *objMap );

@@ -9,6 +9,26 @@
 #include "vm.h"
 
 char *rootDir = NULL;   //根目录
+#define CORE_MODULE VT_TO_VALUE(VT_NULL)
+
+/**
+ * 执行模块 -> 一个源文件被视为一个模块
+ * @param vm
+ * @param moduleName
+ * @param moduleCode
+ * @return
+ */
+VMResult ExecuteModule( VM *vm, Value moduleName, const char *moduleCode )
+{
+	return VM_RESULT_ERROR;
+}
+
+void BuildCore( VM *vm )
+{
+	// 创建核心模块,录入到vm->allModules
+	ObjModule* coreModule = NewObjModule(vm, NULL); // NULL为核心模块.name
+	MapSet(vm, vm->allModules, CORE_MODULE, OBJ_TO_VALUE(coreModule));
+}
 
 /** ReadFile
  * 读取文件中源代码
