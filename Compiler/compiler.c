@@ -46,14 +46,14 @@ struct compileUnit
  */
 int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value )
 {
-
+	
 	// 判断模块变量名是否合法
 	if ( length > MAX_ID_LEN )
 	{
 		// 新建 [id] 存储模块变量名
 		char id[MAX_ID_LEN] = { '\0' };
 		memcpy( id, name, length );
-
+		
 		if ( vm->curParser != NULL)
 		{   //编译源码文件
 			COMPILE_ERROR( vm->curParser, "length of identifier [ %s ] should be no more than %d", id, MAX_ID_LEN );
@@ -62,12 +62,12 @@ int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t le
 		{   // 编译源码前调用,比如加载核心模块时会调用本函数
 			MEM_ERROR( "length of identifier [ %s ] should be no more than %d", id, MAX_ID_LEN );
 		}
-
+		
 	}
-
+	
 	// 从模块变量名中查找变量,若不存在就添加
 	int symbolIndex = GetIndexFromSymbolTable( &objModule->moduleVarName, name, length );
-
+	
 	if ( symbolIndex == -1 )
 	{    // 符号 name 未定义 -> 添加进moduleVar Name和 modulVarValue
 		//添加变量名
@@ -85,12 +85,34 @@ int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t le
 	{
 		symbolIndex = -1;  //已定义则返回-1,用于判断重定义
 	}
-
+	
 	return symbolIndex;
 }
 
+//把opcode定义到数组opCodeSlotsUsed中
+#define OPCODE_SLOTS( opCode, effect ) effect,
+static const int opCodeSlotsUsed[] = {
+#include "opcode.inc"
+};
+#undef OPCODE_SLOTS
+
+//初始化CompileUnit
+static void initCompileUnit( Parser *parser, CompileUnit *cu, CompileUnit *enclosingUnit, bool isMethod )
+{
+	// 初始化 CompileUnit
+	parser->curCompileUnit = cu;
+	cu->curParser = parser;
+	cu->enclosingUnit = enclosingUnit;
+	cu->curLoop = NULL;
+	cu->enclosingClassBK = NULL;
+	
+	
+	
+}
+
 //编译模块(目前是桩函数)
-ObjFn* CompileModule(VM* vm, ObjModule* objModule, const char* moduleCode) {
+ObjFn *CompileModule( VM *vm, ObjModule *objModule, const char *moduleCode )
+{
 	;
 }
 

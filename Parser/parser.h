@@ -8,6 +8,7 @@
 #include "common.h"
 #include "vm.h"
 #include "class.h"
+#include "compiler.h"
 
 /* ~ Token DATA Type ~ */
 
@@ -108,6 +109,7 @@ struct parser
 	Token curToken;                         // 已经识别出来的 Token
 	Token preToken;                         // 前一个被识别出的 Token
 	ObjModule *curModule;                   // 当前正在编译的模块
+	CompileUnit* curCompileUnit;            // 当前编译单元
 
 	//处于内嵌表达式之中时,期望的右括号数量.
 	int interpolationExpectRightParenNum;   // 用于跟踪小括号对儿的嵌套
