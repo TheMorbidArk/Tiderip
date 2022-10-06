@@ -107,5 +107,7 @@ typedef union
 #define MIN_CAPACITY 64
 
 bool ValueIsEqual( Value a, Value b );
+Class* NewRawClass(VM* vm, const char* name, uint32_t fieldNum);
+inline Class* GetClassOfObj(VM* vm, Value object);
 
 #endif //VANTIDEL_CLASS_H

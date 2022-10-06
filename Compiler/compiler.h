@@ -78,5 +78,6 @@ typedef struct
 typedef struct compileUnit CompileUnit;    //提前声明 struct compileUnit 定义在 <compile.c>
 
 int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value );
+ObjFn* CompileModule(VM* vm, ObjModule* objModule, const char* moduleCode);
 
 #endif //_COMPILER_H_

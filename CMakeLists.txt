@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(VanTideL C)
 
 set(CMAKE_C_STANDARD 11)
+add_definitions(-fgnu89-inline)
 
 # 定义源文件 *.c
 aux_source_directory(include INCLUDE)
@@ -25,6 +26,6 @@ foreach(HEADER_PATH ${SCR_HEADER_PATH})
     message("--> ${HEADER_PATH}")
 endforeach()
 message("-----[END_MESSAGES]-----\r\n")
-include_directories(include VM Parser Cli Object)
+include_directories(include VM Parser Cli Object Compiler)
 
 add_executable(VanTideL ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
