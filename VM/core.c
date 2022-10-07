@@ -5,7 +5,11 @@
 #include "core.h"
 #include <string.h>
 #include <sys/stat.h>
+#include "utils.h"
+#include "vm.h"
+#include "obj_thread.h"
 #include "compiler.h"
+#include "core.script.inc"
 
 char *rootDir = NULL;   //根目录
 #define CORE_MODULE VT_TO_VALUE(VT_NULL)
@@ -238,6 +242,7 @@ static ObjThread *loadModule( VM *vm, Value moduleName, const char *moduleCode )
  */
 VMResult ExecuteModule( VM *vm, Value moduleName, const char *moduleCode )
 {
+	ObjThread* objThread = loadModule(vm, moduleName, moduleCode);
 	return VM_RESULT_ERROR;
 }
 
@@ -380,5 +385,8 @@ void BuildCore( VM *vm )
 	vm->objectClass->objHeader.class = objectMetaclass;
 	objectMetaclass->objHeader.class = vm->classOfClass;
 	vm->classOfClass->objHeader.class = vm->classOfClass; //元信息类回路,meta类终点
+	
+	//执行核心模块
+	ExecuteModule(vm, CORE_MODULE, coreModuleCode);
 	
 }
