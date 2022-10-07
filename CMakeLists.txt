@@ -11,21 +11,22 @@ aux_source_directory(Parser PARSER)
 aux_source_directory(Cli CLI)
 aux_source_directory(Object OBJECT)
 aux_source_directory(Compiler COMPILER)
-
-set(SCR_SOUCES_LIST ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER} )
-message("\r\n-----[SCR_SOUCES_LIST]-----")
-foreach(SOURCE_PATH ${SCR_SOUCES_LIST})
+# 显示源文件路径
+set(SCR_SOUCES_LIST ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER})
+message("\r\n-----[SCR_SOUCES_PATH]-----")
+foreach (SOURCE_PATH ${SCR_SOUCES_LIST})
     message("--> ${SOURCE_PATH}")
-endforeach()
+endforeach ()
 message("-----[END_MESSAGES]-----\r\n")
 
 # 定义头文件 *.h
 file(GLOB_RECURSE SCR_HEADER_PATH "*.hpp" "*.h")
 message("-----[SCR_HEADER_PATH]-----")
-foreach(HEADER_PATH ${SCR_HEADER_PATH})
+foreach (HEADER_PATH ${SCR_HEADER_PATH})
     message("--> ${HEADER_PATH}")
-endforeach()
+endforeach ()
 message("-----[END_MESSAGES]-----\r\n")
+
 include_directories(include VM Parser Cli Object Compiler)
 
 add_executable(VanTideL ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
