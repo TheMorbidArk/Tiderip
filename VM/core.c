@@ -390,3 +390,21 @@ void BuildCore( VM *vm )
 	ExecuteModule(vm, CORE_MODULE, coreModuleCode);
 	
 }
+
+/** EnsureSymbolExist
+ * 确保符号已添加到符号表
+ * @param vm
+ * @param table
+ * @param symbol
+ * @param length
+ * @return
+ */
+int EnsureSymbolExist( VM *vm, StringBuffer *table, const char *symbol, uint32_t length )
+{
+	int symbolIndex = GetIndexFromSymbolTable(table, symbol, length);
+	// 若未添加,则调用AddSymbol将其添加进符号表
+	if (symbolIndex == -1) {
+		return AddSymbol(vm, table, symbol, length);
+	}
+	return symbolIndex;
+}

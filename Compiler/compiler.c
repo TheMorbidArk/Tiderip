@@ -65,8 +65,9 @@ typedef void (*DenotationFn)( CompileUnit *cu, bool canAssign );
 //签名函数指针 -> 指向不同方法
 typedef void (*methodSignatureFn)( CompileUnit *cu, Signature *signature );
 
-typedef struct {
-	const char* id;	      //符号
+typedef struct
+{
+	const char *id;          //符号
 	//左绑定权值,不关注左边操作数的符号此值为0
 	BindPower lbp;
 	//字面量,变量,前缀运算符等不关注左操作数的Token调用的方法
@@ -130,6 +131,117 @@ int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t le
 	}
 	
 	return symbolIndex;
+}
+
+/** Sign2String
+ * 把Signature转换为字符串,返回字符串长度
+ * @param sign
+ * @param buf
+ * @return Str_Length
+ */
+static uint32_t Sign2String( Signature *sign, char *buf )
+{
+	uint32_t pos = 0;
+	
+	//复制方法名xxx
+	memcpy( buf + pos, sign->name, sign->length );
+	pos += sign->length;
+	
+	//下面单独处理方法名之后的部分
+	switch ( sign->type )
+	{
+		//SIGN_GETTER形式:xxx,无参数,上面memcpy已完成
+	case SIGN_GETTER:
+		break;
+		
+		//SIGN_SETTER形式: xxx=(_),之前已完成xxx
+	case SIGN_SETTER:
+		buf[ pos++ ] = '=';
+		//下面添加=右边的赋值,只支持一个赋值
+		buf[ pos++ ] = '(';
+		buf[ pos++ ] = '_';
+		buf[ pos++ ] = ')';
+		break;
+		
+		//SIGN_METHOD和SIGN_CONSTRUCT形式:xxx(_,...)
+	case SIGN_CONSTRUCT:
+	case SIGN_METHOD:
+	{
+		buf[ pos++ ] = '(';
+		uint32_t idx = 0;
+		while ( idx < sign->argNum )
+		{
+			buf[ pos++ ] = '_';
+			buf[ pos++ ] = ',';
+			idx++;
+		}
+		
+		if ( idx == 0 )
+		{ //说明没有参数
+			buf[ pos++ ] = ')';
+		}
+		else
+		{ //用rightBracket覆盖最后的','
+			buf[ pos - 1 ] = ')';
+		}
+		break;
+	}
+		
+		//SIGN_SUBSCRIPT形式:xxx[_,...]
+	case SIGN_SUBSCRIPT:
+	{
+		buf[ pos++ ] = '[';
+		uint32_t idx = 0;
+		while ( idx < sign->argNum )
+		{
+			buf[ pos++ ] = '_';
+			buf[ pos++ ] = ',';
+			idx++;
+		}
+		if ( idx == 0 )
+		{ //说明没有参数
+			buf[ pos++ ] = ']';
+		}
+		else
+		{ //用rightBracket覆盖最后的','
+			buf[ pos - 1 ] = ']';
+		}
+		break;
+	}
+		
+		//SIGN_SUBSCRIPT_SETTER形式:xxx[_,...]=(_)
+	case SIGN_SUBSCRIPT_SETTER:
+	{
+		buf[ pos++ ] = '[';
+		uint32_t idx = 0;
+		//argNum包括了等号右边的1个赋值参数,
+		//这里是在处理等号左边subscript中的参数列表,因此减1.
+		//后面专门添加该参数
+		while ( idx < sign->argNum - 1 )
+		{
+			buf[ pos++ ] = '_';
+			buf[ pos++ ] = ',';
+			idx++;
+		}
+		if ( idx == 0 )
+		{ //说明没有参数
+			buf[ pos++ ] = ']';
+		}
+		else
+		{ //用rightBracket覆盖最后的','
+			buf[ pos - 1 ] = ']';
+		}
+		
+		//下面为等号右边的参数构造签名部分
+		buf[ pos++ ] = '=';
+		buf[ pos++ ] = '(';
+		buf[ pos++ ] = '_';
+		buf[ pos++ ] = ')';
+	}
+	}
+	
+	buf[ pos ] = '\0';
+	return pos;   //返回签名串的长度
 }
 
 //把opcode定义到数组opCodeSlotsUsed中
@@ -239,48 +351,148 @@ static void WriteOpCodeShortOperand( CompileUnit *cu, OpCode opCode, int operand
 }
 
 //添加常量并返回其索引
-static uint32_t AddConstant(CompileUnit* cu, Value constant) {
-	ValueBufferAdd(cu->curParser->vm, &cu->fn->constants, constant);
+static uint32_t AddConstant( CompileUnit *cu, Value constant )
+{
+	ValueBufferAdd( cu->curParser->vm, &cu->fn->constants, constant );
 	return cu->fn->constants.count - 1;
 }
 
 //生成加载常量的指令
-static void EmitLoadConstant(CompileUnit* cu, Value value) {
-	int index = AddConstant(cu, value);
-	WriteOpCodeShortOperand(cu, OPCODE_LOAD_CONSTANT, index);
+static void EmitLoadConstant( CompileUnit *cu, Value value )
+{
+	int index = AddConstant( cu, value );
+	WriteOpCodeShortOperand( cu, OPCODE_LOAD_CONSTANT, index );
 }
 
 //数字和字符串.nud() 编译字面量
-static void Literal(CompileUnit* cu, bool canAssign UNUSED) {
+static void Literal( CompileUnit *cu, bool canAssign UNUSED)
+{
 	//literal是常量(数字和字符串)的nud方法,用来返回字面值.
-	EmitLoadConstant(cu, cu->curParser->preToken.value);
+	EmitLoadConstant( cu, cu->curParser->preToken.value );
 }
 
 //不关注左操作数的符号称为前缀符号
 //用于如字面量,变量名,前缀符号等非运算符
-#define PREFIX_SYMBOL(nud) {NULL, BP_NONE, nud, NULL, NULL}
+#define PREFIX_SYMBOL( nud ) {NULL, BP_NONE, nud, NULL, NULL}
 
 //前缀运算符,如'!'
-#define PREFIX_OPERATOR(id) {id, BP_NONE, unaryOperator, NULL, unaryMethodSignature}
+#define PREFIX_OPERATOR( id ) {id, BP_NONE, unaryOperator, NULL, unaryMethodSignature}
 
 //关注左操作数的符号称为中缀符号
 //数组'[',函数'(',实例与方法之间的'.'等
-#define INFIX_SYMBOL(lbp, led) {NULL, lbp, NULL, led, NULL}
+#define INFIX_SYMBOL( lbp, led ) {NULL, lbp, NULL, led, NULL}
 
 //中棳运算符
-#define INFIX_OPERATOR(id, lbp) {id, lbp, NULL, infixOperator, infixMethodSignature}
+#define INFIX_OPERATOR( id, lbp ) {id, lbp, NULL, infixOperator, infixMethodSignature}
 
 //既可做前缀又可做中缀的运算符,如'-'
-#define MIX_OPERATOR(id) {id, BP_TERM, unaryOperator, infixOperator, mixMethodSignature}
+#define MIX_OPERATOR( id ) {id, BP_TERM, unaryOperator, infixOperator, mixMethodSignature}
 
 //占位用的
 #define UNUSED_RULE {NULL, BP_NONE, NULL, NULL, NULL}
 
 SymbolBindRule Rules[] = {
-	/* TOKEN_INVALID*/		    UNUSED_RULE,
-	/* TOKEN_NUM	*/	   	    PREFIX_SYMBOL(Literal),
-	/* TOKEN_STRING */ 	   	    PREFIX_SYMBOL(Literal),
+	/* TOKEN_INVALID*/            UNUSED_RULE,
+	/* TOKEN_NUM	*/            PREFIX_SYMBOL( Literal ),
+	/* TOKEN_STRING */            PREFIX_SYMBOL( Literal ),
 };
+
+/** Expression
+ * TDOP 语法分析的核心 -> 计算表达式的结果
+ * @param cu
+ * @param rbp
+ */
+static void Expression( CompileUnit *cu, BindPower rbp )
+{
+	//以中缀运算符表达式"aSwTe"为例,
+	//大写字符表示运算符,小写字符表示操作数
+	
+	//进入expression时,curToken是操作数w, preToken是运算符S
+	DenotationFn nud = Rules[ cu->curParser->curToken.type ].nud;
+	
+	//表达式开头的要么是操作数要么是前缀运算符,必然有nud方法
+	ASSERT( nud != NULL, "nud is NULL!" );
+	
+	GetNextToken( cu->curParser );  //执行后curToken为运算符T
+	
+	bool canAssign = rbp < BP_ASSIGN;
+	nud( cu, canAssign );   //计算操作数w的值
+	
+	while ( rbp < Rules[ cu->curParser->curToken.type ].lbp )
+	{
+		DenotationFn led = Rules[ cu->curParser->curToken.type ].led;
+		GetNextToken( cu->curParser );  //执行后curToken为操作数e
+		led( cu, canAssign );  //计算运算符T.led方法
+	}
+}
+
+/** EmitCallBySignature
+ * 通过签名编译方法调用 包括callX和superX指令
+ * @param cu
+ * @param sign
+ * @param opcode
+ */
+static void EmitCallBySignature( CompileUnit *cu, Signature *sign, OpCode opcode )
+{
+	char signBuffer[MAX_SIGN_LEN];
+	uint32_t length = Sign2String( sign, signBuffer );
+	
+	// 确保录入
+	int symbolIndex = EnsureSymbolExist( cu->curParser->vm, &cu->curParser->vm->allMethodNames, signBuffer, length );
+	WriteOpCodeShortOperand( cu, opcode + sign->argNum, symbolIndex );
+	
+	//此时在常量表中预创建一个空slot占位,将来绑定方法时再装入基类
+	if ( opcode == OPCODE_SUPER0 )
+	{
+		WriteShortOperand( cu, AddConstant( cu, VT_TO_VALUE( VT_NULL )));
+	}
+}
+
+/** EmitCall
+ * 生成方法调用的指令,仅限callX指令
+ * @param cu
+ * @param numArgs
+ * @param name
+ * @param length
+ */
+static void EmitCall( CompileUnit *cu, int numArgs, const char *name, int length )
+{
+	int symbolIndex = EnsureSymbolExist( cu->curParser->vm, &cu->curParser->vm->allMethodNames, name, length );
+	WriteOpCodeShortOperand(cu, OPCODE_CALL0 + numArgs, symbolIndex);
+}
+
+/** InfixOperator
+ * 中缀运算符.led方法
+ * @param cu
+ * @param canAssign
+ */
+static void InfixOperator(CompileUnit* cu, bool canAssign UNUSED) {
+	SymbolBindRule* rule = &Rules[cu->curParser->preToken.type];
+	
+	//中缀运算符对左右操作数的绑定权值一样
+	BindPower rbp = rule->lbp;
+	Expression(cu, rbp);  //解析右操作数
+	
+	//生成1个参数的签名
+	Signature sign = {SIGN_METHOD, rule->id, strlen(rule->id), 1};
+	EmitCallBySignature(cu, &sign, OPCODE_CALL0);
+}
+
+/** UnaryOperator
+ * 前缀运算符.nud方法, 如'-','!'等
+ * @param cu
+ * @param canAssign
+ */
+static void UnaryOperator(CompileUnit* cu, bool canAssign UNUSED) {
+	SymbolBindRule* rule = &Rules[cu->curParser->preToken.type];
+	
+	//BP_UNARY做为rbp去调用expression解析右操作数
+	Expression(cu, BP_UNARY);
+	
+	//生成调用前缀运算符的指令
+	//0个参数,前缀运算符都是1个字符,长度是1
+	EmitCall(cu, 0, rule->id, 1);
+}
 
 //编译程序
 static void CompileProgram( CompileUnit *cu )

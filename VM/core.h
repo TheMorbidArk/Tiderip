@@ -15,5 +15,6 @@ void BuildCore(VM* vm);
 void BindMethod(VM* vm, Class* class, uint32_t index, Method method);
 void BindSuperClass(VM* vm, Class* subClass, Class* superClass);
 
+int EnsureSymbolExist(VM* vm, SymbolTable* table, const char* symbol, uint32_t length);
 
 #endif //SPARROW_CORE_H

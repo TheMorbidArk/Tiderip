@@ -80,4 +80,6 @@ typedef struct compileUnit CompileUnit;    //提前声明 struct compileUnit 定
 int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value );
 ObjFn* CompileModule(VM* vm, ObjModule* objModule, const char* moduleCode);
 
+static uint32_t AddConstant(CompileUnit* cu, Value constant);
+
 #endif //_COMPILER_H_
