@@ -37,6 +37,22 @@ struct compileUnit
 
 typedef enum
 {
+	VAR_SCOPE_INVALID,
+	VAR_SCOPE_LOCAL,    //局部变量
+	VAR_SCOPE_UPVALUE,  //upvalue
+	VAR_SCOPE_MODULE    //模块变量
+} VarScopeType;   //标识变量作用域
+
+typedef struct
+{
+	VarScopeType scopeType;   //变量的作用域
+	//根据scodeType的值,
+	//此索引可能指向局部变量或upvalue或模块变量
+	int index; // -> VarScopeType
+} Variable;
+
+typedef enum
+{
 	BP_NONE,      //无绑定能力
 	
 	//从上往下,优先级越来越高
@@ -80,7 +96,7 @@ typedef struct
 } SymbolBindRule;   //符号绑定规则
 
 /** DefineModuleVar
- * 在模块objModule中定义名为name,值为value的模块变量
+ * 在模块objModule中定义名为name,值为value的 <模块变量>
  * @param vm
  * @param objModule
  * @param name
@@ -244,6 +260,81 @@ static uint32_t Sign2String( Signature *sign, char *buf )
 	return pos;   //返回签名串的长度
 }
 
+/** AddLocalVar
+ * 添加局部变量到cu
+ * @param cu
+ * @param name
+ * @param length
+ * @return cu->localVars -> 局部变量索引(The Last)
+ */
+static uint32_t AddLocalVar( CompileUnit *cu, const char *name, uint32_t length )
+{
+	LocalVar *var = &( cu->localVars[ cu->localVarNum ] );
+	var->name = name;
+	var->length = length;
+	var->scopeDepth = cu->scopeDepth;
+	var->isUpvalue = false;
+	return cu->localVarNum++;
+}
+
+/** DeclareLocalVar
+ * 声明局部变量
+ * @param cu
+ * @param name
+ * @param length
+ * @return Var 的索引 Index
+ */
+static int DeclareLocalVar( CompileUnit *cu, const char *name, uint32_t length )
+{
+	if ( cu->localVarNum >= MAX_LOCAL_VAR_NUM )
+	{
+		COMPILE_ERROR( cu->curParser, "the max length of local variable of one scope is %d", MAX_LOCAL_VAR_NUM );
+	}
+	
+	for ( int idx = ( int )( cu->localVarNum - 1 ); idx >= 0; idx-- )
+	{
+		LocalVar *var = &cu->localVars[ idx ];
+		// 如果到了父作用域就退出,减少没必要的遍历 -> 剪枝
+		if ( var->scopeDepth < cu->scopeDepth )
+		{
+			break;
+		}
+		// 如果重复定义则报错
+		if ( var->length == length && memcmp( var->name, name, length ) == 0 )
+		{
+			char id[MAX_ID_LEN] = { '\0' };
+			memcpy( id, name, length );
+			COMPILE_ERROR( cu->curParser, "identifier \"%s\" redefinition!", id );
+		}
+	}
+	return ( int )AddLocalVar( cu, name, length );
+}
+
+/** DeclareVariable
+ * 根据作用域声明变量 -> 全局变量
+ * @param cu
+ * @param name
+ * @param length
+ * @return
+ */
+static int DeclareVariable( CompileUnit *cu, const char *name, uint32_t length )
+{
+	if ( cu->scopeDepth == -1 )
+	{
+		int index = DefineModuleVar( cu->curParser->vm, cu->curParser->curModule, name, length, VT_TO_VALUE( VT_NULL ));
+		// 若是重复定义则报错
+		if ( index == -1 )
+		{
+			char id[MAX_ID_LEN] = { '\0' };
+			memcpy( id, name, length );
+			COMPILE_ERROR( cu->curParser, "identifier \"%s\" redefinition!", id );
+		}
+		return index;
+	}
+	//否则是局部作用域,声明局部变量
+	return DeclareLocalVar( cu, name, length );
+}
+
 //把opcode定义到数组opCodeSlotsUsed中
 #define OPCODE_SLOTS( opCode, effect ) effect,
 static const int opCodeSlotsUsed[] = {
@@ -350,6 +441,44 @@ static void WriteOpCodeShortOperand( CompileUnit *cu, OpCode opCode, int operand
 	WriteShortOperand( cu, operand );
 }
 
+//为单运算符方法创建签名
+static void UnaryMethodSignature( CompileUnit *cu UNUSED, Signature *sign UNUSED)
+{
+	//名称部分在调用前已经完成,只修改类型
+	sign->type = SIGN_GETTER;
+}
+
+//为中缀运算符创建签名
+static void InfixMethodSignature( CompileUnit *cu, Signature *sign )
+{
+	//在类中的运算符都是方法,类型为SIGN_METHOD
+	sign->type = SIGN_METHOD;
+	
+	// 中缀运算符只有一个参数,故初始为1
+	sign->argNum = 1;
+	ConsumeCurToken( cu->curParser, TOKEN_LEFT_PAREN, "expect '(' after infix operator!" );
+	ConsumeCurToken( cu->curParser, TOKEN_ID, "expect variable name!" );
+	DeclareVariable( cu, cu->curParser->preToken.start, cu->curParser->preToken.length );
+	ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after parameter!" );
+}
+
+//为既做单运算符又做中缀运算符的符号方法创建签名
+static void mixMethodSignature( CompileUnit *cu, Signature *sign )
+{
+	//假设是单运算符方法,因此默认为getter
+	sign->type = SIGN_GETTER;
+	
+	//若后面有'(',说明其为中缀运算符,那就置其类型为SIGN_METHOD
+	if ( MatchToken( cu->curParser, TOKEN_LEFT_PAREN ))
+	{
+		sign->type = SIGN_METHOD;
+		sign->argNum = 1;
+		ConsumeCurToken( cu->curParser, TOKEN_ID, "expect variable name!" );
+		DeclareVariable( cu, cu->curParser->preToken.start, cu->curParser->preToken.length );
+		ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after parameter!" );
+	}
+}
+
 //添加常量并返回其索引
 static uint32_t AddConstant( CompileUnit *cu, Value constant )
 {
@@ -448,6 +577,41 @@ static void EmitCallBySignature( CompileUnit *cu, Signature *sign, OpCode opcode
 	}
 }
 
+/** DeclareModuleVar
+ * 声明模块变量,与defineModuleVar的区别是不做重定义检查,默认为声明
+ * @param vm
+ * @param objModule
+ * @param name
+ * @param length
+ * @param value
+ * @return
+ */
+static int DeclareModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value )
+{
+	ValueBufferAdd(vm, &objModule->moduleVarValue, value);
+	return AddSymbol(vm, &objModule->moduleVarName, name, length);
+}
+
+//返回包含cu->enclosingClassBK的最近的CompileUnit
+static CompileUnit* GetEnclosingClassBKUnit(CompileUnit* cu) {
+	while (cu != NULL) {
+		if (cu->enclosingClassBK != NULL) {
+			return cu;
+		}
+		cu = cu->enclosingUnit;
+	}
+	return NULL;
+}
+
+//返回包含cu最近的ClassBookKeep
+static ClassBookKeep* GetEnclosingClassBK(CompileUnit* cu) {
+	CompileUnit* ncu = GetEnclosingClassBKUnit(cu);
+	if (ncu != NULL) {
+		return ncu->enclosingClassBK;
+	}
+	return NULL;
+}
+
 /** EmitCall
  * 生成方法调用的指令,仅限callX指令
  * @param cu
@@ -458,7 +622,7 @@ static void EmitCallBySignature( CompileUnit *cu, Signature *sign, OpCode opcode
 static void EmitCall( CompileUnit *cu, int numArgs, const char *name, int length )
 {
 	int symbolIndex = EnsureSymbolExist( cu->curParser->vm, &cu->curParser->vm->allMethodNames, name, length );
-	WriteOpCodeShortOperand(cu, OPCODE_CALL0 + numArgs, symbolIndex);
+	WriteOpCodeShortOperand( cu, OPCODE_CALL0 + numArgs, symbolIndex );
 }
 
 /** InfixOperator
@@ -466,16 +630,17 @@ static void EmitCall( CompileUnit *cu, int numArgs, const char *name, int length
  * @param cu
  * @param canAssign
  */
-static void InfixOperator(CompileUnit* cu, bool canAssign UNUSED) {
-	SymbolBindRule* rule = &Rules[cu->curParser->preToken.type];
+static void InfixOperator( CompileUnit *cu, bool canAssign UNUSED)
+{
+	SymbolBindRule *rule = &Rules[ cu->curParser->preToken.type ];
 	
 	//中缀运算符对左右操作数的绑定权值一样
 	BindPower rbp = rule->lbp;
-	Expression(cu, rbp);  //解析右操作数
+	Expression( cu, rbp );  //解析右操作数
 	
 	//生成1个参数的签名
-	Signature sign = {SIGN_METHOD, rule->id, strlen(rule->id), 1};
-	EmitCallBySignature(cu, &sign, OPCODE_CALL0);
+	Signature sign = { SIGN_METHOD, rule->id, strlen( rule->id ), 1 };
+	EmitCallBySignature( cu, &sign, OPCODE_CALL0 );
 }
 
 /** UnaryOperator
@@ -483,15 +648,16 @@ static void InfixOperator(CompileUnit* cu, bool canAssign UNUSED) {
  * @param cu
  * @param canAssign
  */
-static void UnaryOperator(CompileUnit* cu, bool canAssign UNUSED) {
-	SymbolBindRule* rule = &Rules[cu->curParser->preToken.type];
+static void UnaryOperator( CompileUnit *cu, bool canAssign UNUSED)
+{
+	SymbolBindRule *rule = &Rules[ cu->curParser->preToken.type ];
 	
 	//BP_UNARY做为rbp去调用expression解析右操作数
-	Expression(cu, BP_UNARY);
+	Expression( cu, BP_UNARY );
 	
 	//生成调用前缀运算符的指令
 	//0个参数,前缀运算符都是1个字符,长度是1
-	EmitCall(cu, 0, rule->id, 1);
+	EmitCall( cu, 0, rule->id, 1 );
 }
 
 //编译程序
