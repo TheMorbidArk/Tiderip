@@ -463,7 +463,7 @@ static void InfixMethodSignature( CompileUnit *cu, Signature *sign )
 }
 
 //为既做单运算符又做中缀运算符的符号方法创建签名
-static void mixMethodSignature( CompileUnit *cu, Signature *sign )
+static void MixMethodSignature( CompileUnit *cu, Signature *sign )
 {
 	//假设是单运算符方法,因此默认为getter
 	sign->type = SIGN_GETTER;
@@ -588,14 +588,17 @@ static void EmitCallBySignature( CompileUnit *cu, Signature *sign, OpCode opcode
  */
 static int DeclareModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value )
 {
-	ValueBufferAdd(vm, &objModule->moduleVarValue, value);
-	return AddSymbol(vm, &objModule->moduleVarName, name, length);
+	ValueBufferAdd( vm, &objModule->moduleVarValue, value );
+	return AddSymbol( vm, &objModule->moduleVarName, name, length );
 }
 
 //返回包含cu->enclosingClassBK的最近的CompileUnit
-static CompileUnit* GetEnclosingClassBKUnit(CompileUnit* cu) {
-	while (cu != NULL) {
-		if (cu->enclosingClassBK != NULL) {
+static CompileUnit *GetEnclosingClassBKUnit( CompileUnit *cu )
+{
+	while ( cu != NULL)
+	{
+		if ( cu->enclosingClassBK != NULL)
+		{
 			return cu;
 		}
 		cu = cu->enclosingUnit;
@@ -604,12 +607,65 @@ static CompileUnit* GetEnclosingClassBKUnit(CompileUnit* cu) {
 }
 
 //返回包含cu最近的ClassBookKeep
-static ClassBookKeep* GetEnclosingClassBK(CompileUnit* cu) {
-	CompileUnit* ncu = GetEnclosingClassBKUnit(cu);
-	if (ncu != NULL) {
+static ClassBookKeep *GetEnclosingClassBK( CompileUnit *cu )
+{
+	CompileUnit *ncu = GetEnclosingClassBKUnit( cu );
+	if ( ncu != NULL)
+	{
 		return ncu->enclosingClassBK;
 	}
 	return NULL;
+}
+
+static void ProcessArgList( CompileUnit *cu, Signature *sign )
+{
+	//由主调方保证参数不空
+	ASSERT( cu->curParser->curToken.type != TOKEN_RIGHT_PAREN &&
+	        cu->curParser->curToken.type != TOKEN_RIGHT_BRACKET, "empty argument list!" );
+	do
+	{
+		if ( ++sign->argNum > MAX_ARG_NUM )
+		{
+			COMPILE_ERROR( cu->curParser, "the max number of argument is %d!", MAX_ARG_NUM );
+		}
+		Expression( cu, BP_LOWEST );  //加载实参
+	} while ( MatchToken( cu->curParser, TOKEN_COMMA ));
+}
+
+//声明形参列表中的各个形参
+static void ProcessParaList( CompileUnit *cu, Signature *sign )
+{
+	ASSERT( cu->curParser->curToken.type != TOKEN_RIGHT_PAREN &&
+	        cu->curParser->curToken.type != TOKEN_RIGHT_BRACKET, "empty argument list!" );
+	do
+	{
+		if ( ++sign->argNum > MAX_ARG_NUM )
+		{
+			COMPILE_ERROR( cu->curParser, "the max number of argument is %d!", MAX_ARG_NUM );
+		}
+		ConsumeCurToken( cu->curParser, TOKEN_ID, "expect variable name!" );
+		DeclareVariable( cu, cu->curParser->preToken.start, cu->curParser->preToken.length );
+	} while ( MatchToken( cu->curParser, TOKEN_COMMA ));
+}
+
+static bool TrySetter( CompileUnit *cu, Signature *sign )
+{
+	if ( !MatchToken( cu->curParser, TOKEN_ASSIGN ))
+	{
+		return false;
+	}
+	
+	if ( sign->type == SIGN_SUBSCRIPT )
+	{
+		sign->type = SIGN_SUBSCRIPT_SETTER;
+	}
+	else
+	{
+		sign->type = SIGN_SETTER;
+	}
+	
+	
+	
 }
 
 /** EmitCall
