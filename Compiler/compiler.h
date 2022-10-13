@@ -81,5 +81,6 @@ int DefineModuleVar( VM *vm, ObjModule *objModule, const char *name, uint32_t le
 ObjFn* CompileModule(VM* vm, ObjModule* objModule, const char* moduleCode);
 
 static uint32_t AddConstant(CompileUnit* cu, Value constant);
+static void CompileProgram(CompileUnit* cu);
 
 #endif //_COMPILER_H_

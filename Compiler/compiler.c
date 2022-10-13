@@ -648,6 +648,7 @@ static void ProcessParaList( CompileUnit *cu, Signature *sign )
 	} while ( MatchToken( cu->curParser, TOKEN_COMMA ));
 }
 
+//尝试编译setter
 static bool TrySetter( CompileUnit *cu, Signature *sign )
 {
 	if ( !MatchToken( cu->curParser, TOKEN_ASSIGN ))
@@ -664,7 +665,376 @@ static bool TrySetter( CompileUnit *cu, Signature *sign )
 		sign->type = SIGN_SETTER;
 	}
 	
+	//读取等号右边的形参左边的'('
+	ConsumeCurToken( cu->curParser, TOKEN_LEFT_PAREN, "expect '(' after '='!" );
+	//读取形参
+	ConsumeCurToken( cu->curParser, TOKEN_ID, "expect ID!" );
+	//声明形参
+	DeclareVariable( cu, cu->curParser->preToken.start, cu->curParser->preToken.length );
 	
+	//读取等号右边的形参右边的')'
+	ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after argument list!" );
+	sign->argNum++;
+	return true;
+	
+}
+
+//标识符的签名函数
+static void IdMethodSignature( CompileUnit *cu, Signature *sign )
+{
+	//刚识别到id,默认为getter
+	sign->type = SIGN_GETTER;
+	
+	//new方法为构造函数
+	if ( sign->length == 3 && memcmp( sign->name, "new", 3 ) == 0 )
+	{
+		
+		//构造函数后面不能接'=',即不能成为setter
+		if ( MatchToken( cu->curParser, TOKEN_ASSIGN ))
+		{
+			COMPILE_ERROR( cu->curParser, "constructor shouldn`t be setter!" );
+		}
+		
+		//构造函数必须是标准的method,即new(_,...),new后面必须接'('
+		if ( !MatchToken( cu->curParser, TOKEN_LEFT_PAREN ))
+		{
+			COMPILE_ERROR( cu->curParser, "constructor must be method!" );
+		}
+		
+		sign->type = SIGN_CONSTRUCT;
+		
+		//无参数就直接返回
+		if ( MatchToken( cu->curParser, TOKEN_RIGHT_PAREN ))
+		{
+			return;
+		}
+		
+	}
+	else
+	{  //若不是构造函数
+		
+		if ( TrySetter( cu, sign ))
+		{
+			//若是setter,此时已经将type改为了setter,直接返回
+			return;
+		}
+		
+		if ( !MatchToken( cu->curParser, TOKEN_LEFT_PAREN ))
+		{
+			//若后面没有'('说明是getter,type已在开头置为getter,直接返回
+			return;
+		}
+		
+		//至此type应该为一般形式的SIGN_METHOD,形式为name(paralist)
+		sign->type = SIGN_METHOD;
+		//直接匹配到')'，说明形参为空
+		if ( MatchToken( cu->curParser, TOKEN_RIGHT_PAREN ))
+		{
+			return;
+		}
+	}
+	
+	//下面处理形参
+	ProcessParaList( cu, sign );
+	ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after parameter list!" );
+	
+}
+
+//查找局部变量
+static int FindLocal( CompileUnit *cu, const char *name, uint32_t length )
+{
+	for ( int index = cu->localVarNum - 1; index >= 0; index-- )
+	{
+		if ( cu->localVars[ index ].length == length && memcmp( cu->localVars[ index ].name, name, length ) == 0 )
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
+//添加upvalue到cu->upvalues,返回其索引.若已存在则只返回索引
+static int AddUpvalue( CompileUnit *cu, bool isEnclosingLocalVar, uint32_t index )
+{
+	for ( uint32_t idx = 0; idx < cu->fn->upvalueNum; idx++ )
+	{
+		if ( cu->upvalues[ idx ].index == index &&
+		     cu->upvalues[ idx ].isEnclosingLocalVar == isEnclosingLocalVar )
+		{
+			return idx;
+		}
+	}
+	
+	//若没找到则将其添加
+	cu->upvalues[ cu->fn->upvalueNum ].isEnclosingLocalVar = isEnclosingLocalVar;
+	cu->upvalues[ cu->fn->upvalueNum ].index = index;
+	return cu->fn->upvalueNum++;
+	
+}
+
+//查找name指代的upvalue后添加到cu->upvalues,返回其索引,否则返回-1
+static int FindUpvalue( CompileUnit *cu, const char *name, uint32_t length )
+{
+	if ( cu->enclosingUnit == NULL)
+	{ //如果已经到了最外层仍未找到,返回-1.
+		return -1;
+	}
+	//进入了方法的cu并且查找的不是静态域,即不是方法的Upvalue,那就没必要再往上找了
+	if ( !strchr( name, ' ' ) && cu->enclosingUnit->enclosingClassBK != NULL)
+	{
+		return -1;
+	}
+	
+	//查看name是否为直接外层的局部变量
+	int directOuterLocalIndex = FindLocal( cu->enclosingUnit, name, length );
+	
+	//若是,将该外层局部变量置为upvalue,
+	if ( directOuterLocalIndex != -1 )
+	{
+		cu->enclosingUnit->localVars[ directOuterLocalIndex ].isUpvalue = true;
+		return AddUpvalue( cu, true, ( uint32_t )directOuterLocalIndex );
+	}
+	
+	//向外层递归查找
+	int directOuterUpvalueIndex = FindUpvalue( cu->enclosingUnit, name, length );
+	if ( directOuterUpvalueIndex != -1 )
+	{
+		return AddUpvalue( cu, false, ( uint32_t )directOuterUpvalueIndex );
+	}
+	
+	//执行到此说明没有该upvalue对应的局部变量,返回-1
+	return -1;
+}
+
+//从局部变量和upvalue中查找符号name
+static Variable GetVarFromLocalOrUpvalue( CompileUnit *cu, const char *name, uint32_t length )
+{
+	Variable var;
+	//默认为无效作用域类型,查找到后会被更正
+	var.scopeType = VAR_SCOPE_INVALID;
+	
+	var.index = FindLocal( cu, name, length );
+	if ( var.index != -1 )
+	{
+		var.scopeType = VAR_SCOPE_LOCAL;
+		return var;
+	}
+	
+	var.index = FindUpvalue( cu, name, length );
+	if ( var.index != -1 )
+	{
+		var.scopeType = VAR_SCOPE_UPVALUE;
+	}
+	return var;
+}
+
+//生成把变量var加载到栈的指令
+static void EmitLoadVariable( CompileUnit *cu, Variable var )
+{
+	switch ( var.scopeType )
+	{
+	case VAR_SCOPE_LOCAL:
+		//生成加载局部变量入栈的指令
+		WriteOpCodeByteOperand( cu, OPCODE_LOAD_LOCAL_VAR, var.index );
+		break;
+	case VAR_SCOPE_UPVALUE:
+		//生成加载upvalue到栈的指令
+		WriteOpCodeByteOperand( cu, OPCODE_LOAD_UPVALUE, var.index );
+		break;
+	case VAR_SCOPE_MODULE:
+		//生成加载模块变量到栈的指令
+		WriteOpCodeShortOperand( cu, OPCODE_LOAD_MODULE_VAR, var.index );
+		break;
+	default:
+		// 不可能抵达的代码块
+		NOT_REACHED( );
+	}
+}
+
+//为变量var生成存储的指令
+static void EmitStoreVariable( CompileUnit *cu, Variable var )
+{
+	switch ( var.scopeType )
+	{
+	case VAR_SCOPE_LOCAL:
+		//生成存储局部变量的指令
+		WriteOpCodeByteOperand( cu, OPCODE_STORE_LOCAL_VAR, var.index );
+		break;
+	case VAR_SCOPE_UPVALUE:
+		//生成存储upvalue的指令
+		WriteOpCodeByteOperand( cu, OPCODE_STORE_UPVALUE, var.index );
+		break;
+	case VAR_SCOPE_MODULE:
+		//生成存储模块变量的指令
+		WriteOpCodeByteOperand( cu, OPCODE_STORE_MODULE_VAR, var.index );
+		break;
+	default:
+		NOT_REACHED( );
+	}
+}
+
+//生成加载或存储变量的指令
+static void EmitLoadOrStoreVariable( CompileUnit *cu, bool canAssign, Variable var )
+{
+	if ( canAssign && MatchToken( cu->curParser, TOKEN_ASSIGN ))
+	{
+		Expression( cu, BP_LOWEST );   //计算'='右边表达式的值
+		EmitStoreVariable( cu, var );  //为var生成赋值指令
+	}
+	else
+	{
+		EmitLoadVariable( cu, var );   //为var生成读取指令
+	}
+}
+
+//生成把实例对象this加载到栈的指令
+static void EmitLoadThis( CompileUnit *cu )
+{
+	Variable var = GetVarFromLocalOrUpvalue( cu, "this", 4 );
+	ASSERT( var.scopeType != VAR_SCOPE_INVALID, "get variable failed!" );
+	EmitLoadVariable( cu, var );
+}
+
+//编译代码块
+static void CompileBlock( CompileUnit *cu )
+{
+	//进入本函数前已经读入了'{'
+	while ( !MatchToken( cu->curParser, TOKEN_RIGHT_BRACE ))
+	{
+		if ( PEEK_TOKEN( cu->curParser ) == TOKEN_EOF )
+		{
+			COMPILE_ERROR( cu->curParser, "expect '}' at the end of block!" );
+		}
+		CompileProgram( cu );
+	}
+}
+
+//编译函数或方法体
+static void CompileBody( CompileUnit *cu, bool isConstruct )
+{
+	//进入本函数前已经读入了'{'
+	CompileBlock( cu );
+	if ( isConstruct )
+	{
+		//若是构造函数就加载"this对象"做为下面OPCODE_RETURN的返回值
+		WriteOpCodeByteOperand( cu, OPCODE_LOAD_LOCAL_VAR, 0 );
+	}
+	else
+	{
+		//否则加载null占位
+		WriteOpCode( cu, OPCODE_PUSH_NULL );
+	}
+	
+	//返回编译结果,若是构造函数就返回this,否则返回null
+	WriteOpCode( cu, OPCODE_RETURN );
+}
+
+//结束cu的编译工作,在其外层编译单元中为其创建闭包
+#if DEBUG
+static ObjFn *EndCompileUnit( CompileUnit *cu, const char *debugName, uint32_t debugNameLen )
+{
+	BindDebugFnName( cu->curParser->vm, cu->fn->debug, debugName, debugNameLen );
+#else
+static ObjFn *EndCompileUnit( CompileUnit *cu )
+{
+#endif
+	//标识单元编译结束
+	WriteOpCode( cu, OPCODE_END );
+	if ( cu->enclosingUnit != NULL)
+	{
+		//把当前编译的objFn做为常量添加到父编译单元的常量表
+		uint32_t index = AddConstant( cu->enclosingUnit, OBJ_TO_VALUE( cu->fn ));
+		
+		//内层函数以闭包形式在外层函数中存在,
+		//在外层函数的指令流中添加"为当前内层函数创建闭包的指令"
+		WriteOpCodeShortOperand( cu->enclosingUnit, OPCODE_CREATE_CLOSURE, index );
+		
+		//为vm在创建闭包时判断引用的是局部变量还是upvalue,
+		//下面为每个upvalue生成参数.
+		index = 0;
+		while ( index < cu->fn->upvalueNum )
+		{
+			WriteByte( cu->enclosingUnit,
+				cu->upvalues[ index ].isEnclosingLocalVar ? 1 : 0 );
+			WriteByte( cu->enclosingUnit,
+				cu->upvalues[ index ].index );
+			index++;
+		}
+	}
+	
+	///下掉本编译单元,使当前编译单元指向外层编译单元
+	cu->curParser->curCompileUnit = cu->enclosingUnit;
+	return cu->fn;
+}
+
+//生成getter或一般method调用指令
+static void EmitGetterMethodCall( CompileUnit *cu, Signature *sign, OpCode opCode )
+{
+	Signature newSign;
+	newSign.type = SIGN_GETTER;  //默认为getter,假设下面的两个if不执行
+	newSign.name = sign->name;
+	newSign.length = sign->length;
+	newSign.argNum = 0;
+	
+	//如果是method,有可能有参数列表  在生成调用方法的指令前必须把参数入栈  否则运行方法时除了会获取到错误的参数(即栈中已有数据)外,g还会在从方法返回时,错误地回收参数空间而导致栈失衡
+	
+	//下面调用的processArgList是把实参入栈,供方法使用
+	if ( MatchToken( cu->curParser, TOKEN_LEFT_PAREN ))
+	{    //判断后面是否有'('
+		newSign.type = SIGN_METHOD;
+		
+		//若后面不是')',说明有参数列表
+		if ( !MatchToken( cu->curParser, TOKEN_RIGHT_PAREN ))
+		{
+			ProcessArgList( cu, &newSign );
+			ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after argument list!" );
+		}
+	}
+	
+	//对method来说可能还传入了块参数
+	if ( MatchToken( cu->curParser, TOKEN_LEFT_BRACE ))
+	{
+		newSign.argNum++;
+		//进入本if块时,上面的if块未必执行过,
+		//此时newSign.type也许还是GETTER,下面要将其设置为METHOD
+		newSign.type = SIGN_METHOD;
+		CompileUnit fnCU;
+		InitCompileUnit( cu->curParser, &fnCU, cu, false );
+		
+		Signature tmpFnSign = { SIGN_METHOD, "", 0, 0 }; //临时用于编译函数
+		if ( MatchToken( cu->curParser, TOKEN_BIT_OR ))
+		{  //若块参数也有参数
+			ProcessParaList( &fnCU, &tmpFnSign );    //将形参声明为函数的局部变量
+			ConsumeCurToken( cu->curParser, TOKEN_BIT_OR, "expect '|' after argument list!" );
+		}
+		fnCU.fn->argNum = tmpFnSign.argNum;
+		
+		//编译函数体,将指令流写进该函数自己的指令单元fnCu
+		CompileBody( &fnCU, false );
+
+#if DEBUG
+		//以此函数被传给的方法来命名这个函数, 函数名=方法名+" block arg"
+	  char fnName[MAX_SIGN_LEN + 10] = {'\0'}; //"block arg\0"
+	  uint32_t len = sign2String(&newSign, fnName);
+	  memmove(fnName + len, " block arg", 10);
+	  endCompileUnit(&fnCU, fnName, len + 10);
+#else
+		EndCompileUnit( &fnCU );
+#endif
+	}
+	
+	//如果是在子类构造函数中
+	if ( sign->type == SIGN_CONSTRUCT )
+	{
+		if ( newSign.type != SIGN_METHOD )
+		{
+			COMPILE_ERROR( cu->curParser, "the form of supercall is super() or super(arguments)" );
+		}
+		newSign.type = SIGN_CONSTRUCT;
+	}
+	
+	//根据签名生成调用指令.如果上面的三个if都未执行,此处就是getter调用
+	EmitCallBySignature( cu, &newSign, opCode );
 	
 }
 
