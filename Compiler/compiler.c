@@ -1038,6 +1038,31 @@ static void EmitGetterMethodCall( CompileUnit *cu, Signature *sign, OpCode opCod
 	
 }
 
+//生成方法调用指令,包括getter和setter
+static void EmitMethodCall( CompileUnit *cu, const char *name, uint32_t length, OpCode opCode, bool canAssign )
+{
+	Signature sign;
+	sign.type = SIGN_GETTER;
+	sign.name = name;
+	sign.length = length;
+	
+	//若是setter则生成调用setter的指令
+	if ( MatchToken( cu->curParser, TOKEN_ASSIGN ) && canAssign )
+	{
+		sign.type = SIGN_SETTER;
+		sign.argNum = 1;   //setter只接受一个参数
+		
+		//载入实参(即'='右边所赋的值),为下面方法调用传参
+		Expression( cu, BP_LOWEST );
+		
+		EmitCallBySignature( cu, &sign, opCode );
+	}
+	else
+	{
+		EmitGetterMethodCall( cu, &sign, opCode );
+	}
+}
+
 /** EmitCall
  * 生成方法调用的指令,仅限callX指令
  * @param cu
@@ -1049,6 +1074,116 @@ static void EmitCall( CompileUnit *cu, int numArgs, const char *name, int length
 {
 	int symbolIndex = EnsureSymbolExist( cu->curParser->vm, &cu->curParser->vm->allMethodNames, name, length );
 	WriteOpCodeShortOperand( cu, OPCODE_CALL0 + numArgs, symbolIndex );
+}
+
+//小写字符开头便是局部变量
+static bool isLocalName( const char *name )
+{
+	return ( name[ 0 ] >= 'a' && name[ 0 ] <= 'z' );
+}
+
+//标识符.nud():变量名或方法名
+static void id( CompileUnit *cu, bool canAssign )
+{
+	Token name = cu->curParser->preToken;
+	ClassBookKeep *classBK = GetEnclosingClassBK( cu );
+	
+	//标识符可以是任意符号,按照此顺序处理:
+	//函数调用->局部变量和upvalue->实例域->静态域->类getter方法调用->模块变量
+	
+	if ( cu->enclosingUnit == NULL && MatchToken( cu->curParser, TOKEN_LEFT_PAREN ))
+	{
+		char id[MAX_ID_LEN] = { '\0' };
+		//函数名加上"Fn "前缀做为模块变量名
+		//检查前面是否已有此函数的定义
+		memmove( id, "Fn ", 3 );
+		memmove( id + 3, name.start, name.length );
+		Variable var;
+		var.scopeType = VAR_SCOPE_MODULE;
+		var.index = GetIndexFromSymbolTable( &cu->curParser->curModule->moduleVarName, id, strlen( id ));
+		if ( var.index == -1 )
+		{
+			memmove( id, name.start, name.length );
+			id[ name.length ] = '\0';
+			COMPILE_ERROR( cu->curParser, "Undefined function: '%s'!", id );
+		}
+		
+		// 1.把模块变量即函数闭包加载到栈
+		EmitLoadVariable( cu, var );
+		Signature sign;
+		//函数调用的形式和method类似,只不过method有一个可选的块参数
+		sign.type = SIGN_METHOD;
+		//把函数调用编译为"闭包.call"的形式,故name为call
+		sign.name = "call";
+		sign.length = 4;
+		sign.argNum = 0;
+		
+		//若后面不是')',说明有参数列表
+		if ( !MatchToken( cu->curParser, TOKEN_RIGHT_PAREN ))
+		{
+			// 2 压入实参
+			ProcessArgList( cu, &sign );
+			ConsumeCurToken( cu->curParser, TOKEN_RIGHT_PAREN, "expect ')' after argument list!" );
+		}
+		
+		// 3 生成调用指令以调用函数
+		EmitCallBySignature( cu, &sign, OPCODE_CALL0 );
+	}
+	else //否则按照各种变量来处理
+	{
+		//按照局部变量和upvalue来处理
+		Variable var = GetVarFromLocalOrUpvalue( cu, name.start, name.length );
+		if ( var.index != -1 )
+		{
+			EmitLoadOrStoreVariable( cu, canAssign, var );
+			return;
+		}
+		
+		//按照实例域来处理
+		if ( classBK != NULL)
+		{
+			int fieldIndex = GetIndexFromSymbolTable( &classBK->fields, name.start, name.length );
+			if ( fieldIndex != -1 )
+			{
+				bool isRead = true;
+				if ( canAssign && MatchToken( cu->curParser, TOKEN_ASSIGN ))
+				{
+					isRead = false;
+					Expression( cu, BP_LOWEST );
+				}
+				
+				//如果当前正在编译类方法,则直接在该实例对象中加载field
+				if ( cu->enclosingUnit != NULL)
+				{
+					WriteOpCodeByteOperand( cu, isRead ? OPCODE_LOAD_THIS_FIELD : OPCODE_STORE_THIS_FIELD, fieldIndex );
+				}
+				else
+				{
+					EmitLoadThis( cu );
+					WriteOpCodeByteOperand( cu, isRead ? OPCODE_LOAD_FIELD : OPCODE_STORE_FIELD, fieldIndex );
+				}
+				return;
+			}
+		}
+		
+		//按照静态域查找
+		if ( classBK != NULL)
+		{
+			char *staticFieldId = ALLOCATE_ARRAY( cu->curParser->vm, char, MAX_ID_LEN );
+			memset( staticFieldId, 0, MAX_ID_LEN );
+			uint32_t staticFieldIdLen;
+			char *clsName = classBK->name->value.start;
+			uint32_t clsLen = classBK->name->value.length;
+			
+			//各类中静态域的名称以"Cls类名 静态域名"来命名
+			memmove(staticFieldId, "Cls", 3);
+			memmove(staticFieldId + 3, clsName, clsLen);
+			memmove(staticFieldId + 3 + clsLen, " ", 1);
+			
+			
+		}
+		
+	}
 }
 
 /** InfixOperator
