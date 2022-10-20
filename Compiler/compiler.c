@@ -2295,7 +2295,7 @@ static void CompileMethod( CompileUnit *cu, Variable classVar, bool isStatic )
 
 #if DEBUG
 	//结束编译并创建方法闭包
-    EndCompileUnit(&methodCU, signatureString, signLen);
+	EndCompileUnit(&methodCU, signatureString, signLen);
 #else
 	//结束编译并创建方法闭包
 	EndCompileUnit( &methodCU );
@@ -2318,6 +2318,45 @@ static void CompileMethod( CompileUnit *cu, Variable classVar, bool isStatic )
 		//构造函数是静态方法,即类方法
 		DefineMethod( cu, classVar, true, constructorIndex );
 	}
+	
+}
+
+//编译类体
+static void CompileClassBody( CompileUnit *cu, Variable classVar )
+{
+	
+	if ( MatchToken( cu->curParser, TOKEN_STATIC ))
+	{
+		if ( MatchToken( cu->curParser, TOKEN_VAR ))
+		{  //处理静态域 "static var id"
+			CompileVarDefinition( cu, true );
+		}
+		else
+		{   //处理静态方法,"static methodName"
+			CompileMethod( cu, classVar, true );
+		}
+		
+	}
+	else if ( MatchToken( cu->curParser, TOKEN_VAR ))
+	{   //实例域
+		CompileVarDefinition( cu, false );
+	}
+	else
+	{  //类的方法
+		CompileMethod( cu, classVar, false );
+	}
+}
+
+//编译类定义
+static void compileClassDefinition( CompileUnit *cu )
+{
+	Variable classVar;
+	if ( cu->scopeDepth != -1 )
+	{ //目前只支持在模块作用域定义类
+		COMPILE_ERROR( cu->curParser, "class definition must be in the module scope!" );
+	}
+	
+	
 	
 }
 

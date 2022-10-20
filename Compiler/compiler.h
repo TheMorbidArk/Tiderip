@@ -97,6 +97,7 @@ inline static void CompileReturn( CompileUnit *cu );
 inline static void CompileBreak( CompileUnit *cu );
 static void CompileForStatment( CompileUnit *cu );
 static void CompileMethod( CompileUnit *cu, Variable classVar, bool isStatic );
+static void compileClassDefinition( CompileUnit *cu );
 
 uint32_t GetBytesOfOperands( Byte *instrStream, Value *constants, int ip );
 
