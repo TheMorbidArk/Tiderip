@@ -233,6 +233,8 @@ static ObjThread *loadModule( VM *vm, Value moduleName, const char *moduleCode )
 	return moduleThread;
 }
 
+//执行模块
+
 /**
  * 执行模块 -> 一个源文件被视为一个模块
  * @param vm
@@ -243,7 +245,7 @@ static ObjThread *loadModule( VM *vm, Value moduleName, const char *moduleCode )
 VMResult ExecuteModule( VM *vm, Value moduleName, const char *moduleCode )
 {
 	ObjThread* objThread = loadModule(vm, moduleName, moduleCode);
-	return VM_RESULT_ERROR;
+	return ExecuteInstruction(vm, objThread);
 }
 
 /** GetIndexFromSymbolTable

@@ -48,7 +48,10 @@ struct vm
 };
 
 void InitVM( VM *vm );
-
 VM *NewVM( void );
+void EnsureStack(VM *vm, ObjThread *objThread, uint32_t neededSlots);
+inline static void CreateFrame(VM *vm, ObjThread *objThread, ObjClosure *objClosure, int argNum);
+VMResult ExecuteInstruction(VM *vm, register ObjThread *curThread);
+static void BindMethodAndPatch(VM *vm, OpCode opCode, uint32_t methodIndex, Class *class, Value methodValue);
 
 #endif //SPARROW_VM_H

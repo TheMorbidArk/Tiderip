@@ -50,6 +50,10 @@ void RunFile( const char *path )
 	}
 
 	VM* vm = NewVM();
+
+	/* TODO 原生方法未实现，脚本语言代码能通过编译但无法运行 */
+	printf("There is something to do...\n"); exit(0);
+
 	const char* sourceCode = ReadFile(path);
 	ExecuteModule(vm, OBJ_TO_VALUE(NewObjString(vm, path, strlen(path))), sourceCode);
 }

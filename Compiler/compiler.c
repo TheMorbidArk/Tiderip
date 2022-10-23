@@ -2066,7 +2066,7 @@ static void CompileClassBody(CompileUnit *cu, Variable classVar) {
 }
 
 //编译类定义
-static void compileClassDefinition(CompileUnit *cu) {
+static void CompileClassDefinition(CompileUnit *cu) {
 	Variable classVar;
 	if (cu->scopeDepth != -1) { //目前只支持在模块作用域定义类
 		COMPILE_ERROR(cu->curParser, "class definition must be in the module scope!");
@@ -2273,7 +2273,17 @@ static void CompileImport(CompileUnit *cu) {
 
 //编译程序
 static void CompileProgram(CompileUnit *cu) {
-	;
+	if (MatchToken(cu->curParser, TOKEN_CLASS)) {
+		CompileClassDefinition(cu);
+	} else if (MatchToken(cu->curParser, TOKEN_FUN)) {
+		CompileFunctionDefinition(cu);
+	} else if (MatchToken(cu->curParser, TOKEN_VAR)) {
+		CompileVarDefinition(cu, cu->curParser->preToken.type == TOKEN_STATIC);
+	} else if (MatchToken(cu->curParser, TOKEN_IMPORT)) {
+		CompileImport(cu);
+	} else {
+		CompileStatment(cu);
+	}
 }
 
 //编译模块
@@ -2303,9 +2313,31 @@ ObjFn *CompileModule(VM *vm, ObjModule *objModule, const char *moduleCode) {
 		CompileProgram(&moduleCU);
 	}
 
-	/* TODO */
-	printf("There is something to do...\n");
-	exit(0);
+	//模块编译完成,生成return null返回,避免执行下面endCompileUnit中添加的OPCODE_END
+	WriteOpCode(&moduleCU, OPCODE_PUSH_NULL);
+	WriteOpCode(&moduleCU, OPCODE_RETURN);
+
+	//检查在函数id中用行号声明的模块变量是否在引用之后有定义
+	uint32_t idx = moduleVarNumBefor;
+	while (idx < objModule->moduleVarValue.count) {
+		//为简单起见,依然是遇到第一个错后就报错退出,后面的不再检查
+		if (VALUE_IS_NUM(objModule->moduleVarValue.datas[idx])) {
+			char *str = objModule->moduleVarName.datas[idx].str;
+			ASSERT(str[objModule->moduleVarName.datas[idx].length] == '\0', "module var name is not closed!");
+			uint32_t lineNo = VALUE_TO_NUM(objModule->moduleVarValue.datas[idx]);
+			COMPILE_ERROR(&parser, "line:%d, variable \'%s\' not defined!", lineNo, str);
+		}
+		idx++;
+	}
+
+	//模块编译完成,当前编译单元置空
+	vm->curParser->curCompileUnit = NULL;
+	vm->curParser = vm->curParser->parent;
+#if DEBUG
+	return endCompileUnit(&moduleCU, "(script)", 8);
+#else
+	return EndCompileUnit(&moduleCU);
+#endif
 
 }
 

@@ -32,7 +32,7 @@ typedef struct
 		Primitive primFn;
 
 		//指向脚本代码编译后的ObjClosure或ObjFn
-//        ObjClosure* obj;
+        ObjClosure* obj;
 	};
 } Method;
 
@@ -109,5 +109,6 @@ typedef union
 bool ValueIsEqual( Value a, Value b );
 Class* NewRawClass(VM* vm, const char* name, uint32_t fieldNum);
 inline Class* GetClassOfObj(VM* vm, Value object);
+Class* NewClass(VM* vm, ObjString* className, uint32_t fieldNum, Class* superClass);
 
 #endif //VANTIDEL_CLASS_H
