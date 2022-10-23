@@ -27,6 +27,8 @@ foreach (HEADER_PATH ${SCR_HEADER_PATH})
 endforeach ()
 message("-----[END_MESSAGES]-----\r\n")
 
+LINK_LIBRARIES(m)
+
 include_directories(include VM Parser Cli Object Compiler)
 
 add_executable(VanTideL ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
