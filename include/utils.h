@@ -2,7 +2,7 @@
 #define _INCLUDE_UTILS_H
 #include "common.h"
 
-void* memManager(VM* vm, void* ptr, uint32_t oldSize, uint32_t newSize);
+void *memManager(VM *vm, void *ptr, uint32_t oldSize, uint32_t newSize);
 
 #define ALLOCATE(vmPtr, type) \
    (type*)memManager(vmPtr, NULL, 0, sizeof(type))
@@ -21,13 +21,13 @@ void* memManager(VM* vm, void* ptr, uint32_t oldSize, uint32_t newSize);
 uint32_t ceilToPowerOf2(uint32_t v);
 
 typedef struct {
-   char* str;
-   uint32_t length;
+  char *str;
+  uint32_t length;
 } String;
 
 typedef struct {
-   uint32_t length; //除结束'\0'之外的字符个数
-   char start[0];  //类似c99中的柔性数组
+  uint32_t length; //除结束'\0'之外的字符个数
+  char start[0];  //类似c99中的柔性数组
 } CharValue;  //字符串缓冲区
 
 //声明buffer类型
@@ -42,7 +42,7 @@ typedef struct {
    } type##Buffer;\
    void type##BufferInit(type##Buffer* buf);\
    void type##BufferFillWrite(VM* vm, \
-	 type##Buffer* buf, type data, uint32_t fillCount);\
+     type##Buffer* buf, type data, uint32_t fillCount);\
    void type##BufferAdd(VM* vm, type##Buffer* buf, type data);\
    void type##BufferClear(VM* vm, type##Buffer* buf);
 
@@ -54,19 +54,19 @@ typedef struct {
    }\
 \
    void type##BufferFillWrite(VM* vm, \
-	 type##Buffer* buf, type data, uint32_t fillCount) {\
+     type##Buffer* buf, type data, uint32_t fillCount) {\
       uint32_t newCounts = buf->count + fillCount;\
       if (newCounts > buf->capacity) {\
-	 size_t oldSize = buf->capacity * sizeof(type);\
-	 buf->capacity = ceilToPowerOf2(newCounts);\
-	 size_t newSize = buf->capacity * sizeof(type);\
-	 ASSERT(newSize > oldSize, "faint...memory allocate!");\
-	 buf->datas = (type*)memManager(vm, buf->datas, oldSize, newSize);\
+     size_t oldSize = buf->capacity * sizeof(type);\
+     buf->capacity = ceilToPowerOf2(newCounts);\
+     size_t newSize = buf->capacity * sizeof(type);\
+     ASSERT(newSize > oldSize, "faint...memory allocate!");\
+     buf->datas = (type*)memManager(vm, buf->datas, oldSize, newSize);\
       }\
       uint32_t cnt = 0;\
       while (cnt < fillCount) {\
-	 buf->datas[buf->count++] = data;\
-	 cnt++;\
+     buf->datas[buf->count++] = data;\
+     cnt++;\
       }\
    }\
 \
@@ -90,17 +90,17 @@ DECLARE_BUFFER_TYPE(Char)
 DECLARE_BUFFER_TYPE(Byte)
 
 typedef enum {
-   ERROR_IO,
-   ERROR_MEM,
-   ERROR_LEX,
-   ERROR_COMPILE,
-   ERROR_RUNTIME
+  ERROR_IO,
+  ERROR_MEM,
+  ERROR_LEX,
+  ERROR_COMPILE,
+  ERROR_RUNTIME
 } ErrorType;
 
-void errorReport(void* parser, 
-      ErrorType errorType, const char* fmt, ...);
+void errorReport(void *parser,
+				 ErrorType errorType, const char *fmt, ...);
 
-void symbolTableClear(VM*, SymbolTable* buffer);
+void symbolTableClear(VM *, SymbolTable *buffer);
 
 #define IO_ERROR(...)\
    errorReport(NULL, ERROR_IO, __VA_ARGS__)
