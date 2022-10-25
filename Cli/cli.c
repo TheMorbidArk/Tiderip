@@ -22,16 +22,34 @@ static void runFile(const char *path) {
 	executeModule(vm, OBJ_TO_VALUE(newObjString(vm, path, strlen(path))), sourceCode);
 }
 
+void LOGO(){
+	char *i = "  ------------------------------------------------------------\n";
+	char *a = "||____   ____           ___________.__    .___     .____      ||\n";
+	char *b	= "||\\   \\ /   /____    ___\\__    ___/|__| __| _/____ |    |     ||\n";
+	char *c = "|| \\   Y   /\\__  \\  /    \\|    |   |  |/ __ |/ __ \\|    |     ||\n";
+	char *d = "||  \\     /  / __ \\|   |  \\    |   |  / /_/ \\  ___/|    |___  ||\n";
+	char *e = "||   \\___/  (____  /___|  /____|   |__\\____ |\\___  >_______ \\ ||\n";
+	char *f = "||               \\/     \\/                 \\/    \\/        \\/ ||\n";
+	char *g = "  ------------------------version 0.1.0-----------------------\n";
+
+	printf("%s",i);
+	printf("%s",a);
+	printf("%s",b);
+	printf("%s",c);
+	printf("%s",d);
+	printf("%s",e);
+	printf("%s",f);
+	printf("%s",g);
+}
+
 int main(int argc, const char **argv) {
 
 	clock_t start_t,finish_t;
 
+	LOGO();
+
 	if (argc == 1) { ;
 	} else {
-
-		printf("-----------------------------\r\n");
-		printf(" Welcome to VanTideL v_0.1.0 \r\n");
-		printf("-----------------------------\r\n");
 
 		start_t = clock();
 
@@ -39,7 +57,7 @@ int main(int argc, const char **argv) {
 
 		finish_t = clock();
 
-		printf("CPU 占用的总时间：%f\n", (double)(finish_t - start_t) / CLOCKS_PER_SEC);
+		printf("> CPU Run Time：%lfs\r\n", (double)(finish_t - start_t) / CLOCKS_PER_SEC);
 	}
 	return 0;
 }

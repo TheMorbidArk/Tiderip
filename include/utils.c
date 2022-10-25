@@ -48,8 +48,7 @@ void symbolTableClear(VM *vm, SymbolTable *buffer) {
 }
 
 //通用报错函数
-void errorReport(void *parser,
-				 ErrorType errorType, const char *fmt, ...) {
+void errorReport(void *parser, ErrorType errorType, const char *fmt, ...) {
 	char buffer[DEFAULT_BUfFER_SIZE] = {'\0'};
 	va_list ap;
 	va_start(ap, fmt);

@@ -1,1 +1,71 @@
+// 行注释
+/* 块注释(不支持换行) */
+
+// 基本输出函数
+// 支持转义字符 \0 \a \b \f \n \r \t \u \"
 System.print("Hello World")
+
+/* 变量定义 */
+var a = 5
+var b = 5.23
+var c = "abcd"
+var d = [1,2,3,4]
+var e = {
+        "a":1,
+        "b":2,
+        "c":3
+        }
+
+/* print 格式化输出 */
+// 形如 -> ("xxx%(var)")
+// 其中var为变量
+System.print("A:%(a) B:%(b) C:%(c) \r\nD:%(d) \r\nE:%(e)")
+
+/* 函数定义 */
+// 传统模式下函数定义
+fun Fun_1(a,b){
+    return a+b
+}
+System.print("Fun_1(a,b):%(Fun_1("Fun","_Define"))")
+// 面向对象函数定义
+var Fun_2 = Fn.new{|a,b|
+    return a+b
+}
+System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
+
+/* if for while */
+// 仅支持在函数中使用
+// 支持 return,break,continue
+fun Fun_3(){
+    // if-else =》 没有elif语句
+    var x = 0
+    if (x == 0){
+        System.print("xxx")
+    }else{
+        System.print("ooo")
+    }
+
+    /* for */
+    var arr = ["H","e","l","l","o"]
+    // 1. for-each
+    System.print("for-each:")
+    for i (arr){
+        System.print(i)
+    }
+    // 2. range
+    System.print("index-range:")
+    for i (0..4){
+        System.print(arr[i])
+    }
+
+    /* while */
+    var idx = 0
+    System.print("While:")
+    while(idx < 10){
+        idx=idx+1
+    }
+    System.print(idx)
+
+}
+Fun_3()
+
