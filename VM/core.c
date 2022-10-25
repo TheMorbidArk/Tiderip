@@ -416,7 +416,7 @@ static ObjThread *loadModule(VM *vm, Value moduleName, const char *moduleCode) {
 static char *getFilePath(const char *moduleName) {
 	uint32_t rootDirLength = rootDir == NULL ? 0 : strlen(rootDir);
 	uint32_t nameLength = strlen(moduleName);
-	uint32_t pathLength = rootDirLength + nameLength + strlen(".sp");
+	uint32_t pathLength = rootDirLength + nameLength + strlen(".vt");
 	char *path = (char *)malloc(pathLength + 1);
 
 	if (rootDir != NULL) {
@@ -424,7 +424,7 @@ static char *getFilePath(const char *moduleName) {
 	}
 
 	memmove(path + rootDirLength, moduleName, nameLength);
-	memmove(path + rootDirLength + nameLength, ".sp", 3);
+	memmove(path + rootDirLength + nameLength, ".vt", 3);
 	path[pathLength] = '\0';
 
 	return path;

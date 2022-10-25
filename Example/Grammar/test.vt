@@ -1,0 +1,9 @@
+System.print("Hello World 你好世界")
+
+fun a(){
+    for a (1..8){
+        System.print(a)
+    }
+}
+
+a()

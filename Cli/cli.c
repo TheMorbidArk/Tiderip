@@ -23,6 +23,11 @@ static void runFile(const char *path) {
 int main(int argc, const char **argv) {
 	if (argc == 1) { ;
 	} else {
+
+		printf("-----------------------------\r\n");
+		printf(" Welcome to VanTideL v_0.1.0 \r\n");
+		printf("-----------------------------\r\n");
+
 		runFile(argv[1]);
 	}
 	return 0;
