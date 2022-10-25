@@ -63,6 +63,9 @@ char *rootDir = NULL;   //根目录
    BindMethod(vm, classPtr, (uint32_t)globalIdx, method);\
 }
 
+static ObjThread *LoadModule(VM *vm, Value moduleName, const char *moduleCode);
+static ObjModule *GetModule(VM *vm, Value moduleName);
+
 /** ReadFile
  * 读取文件中源代码
  * @param path

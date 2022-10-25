@@ -6,6 +6,9 @@
 #include "vm.h"
 #include "core.h"
 
+static void BindMethodAndPatch(VM *vm, OpCode opCode, uint32_t methodIndex, Class *class, Value methodValue);
+inline static void CreateFrame(VM *vm, ObjThread *objThread, ObjClosure *objClosure, int argNum);
+
 /* ~ Functions ~ */
 /** InitVM
  * 初始化虚拟机

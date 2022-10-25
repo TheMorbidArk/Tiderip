@@ -75,43 +75,6 @@ typedef struct Variable Variable;
 int DefineModuleVar(VM *vm, ObjModule *objModule, const char *name, uint32_t length, Value value);
 ObjFn *CompileModule(VM *vm, ObjModule *objModule, const char *moduleCode);
 
-static ClassBookKeep *GetEnclosingClassBK(CompileUnit *cu);
-static void EmitLoadThis(CompileUnit *cu);
-static void InfixOperator(CompileUnit *cu, bool canAssign UNUSED);
-static void UnaryMethodSignature(CompileUnit *cu UNUSED, Signature *sign UNUSED);
-static void UnaryOperator(CompileUnit *cu, bool canAssign UNUSED);
-
-static uint32_t AddConstant(CompileUnit *cu, Value constant);
-static void CompileProgram(CompileUnit *cu);
-static void CompileStatment(CompileUnit *cu);
-static void CompileLoopBody(CompileUnit *cu);
-static void CompileIfStatment(CompileUnit *cu);
-static void CompileWhileStatment(CompileUnit *cu);
-inline static void CompileReturn(CompileUnit *cu);
-inline static void CompileBreak(CompileUnit *cu);
-static void CompileForStatment(CompileUnit *cu);
-static void CompileMethod(CompileUnit *cu, Variable classVar, bool isStatic);
-static void compileClassDefinition(CompileUnit *cu);
-static void CompileFunctionDefinition(CompileUnit *cu);
-static void CompileImport(CompileUnit *cu);
-
 uint32_t GetBytesOfOperands(Byte *instrStream, Value *constants, int ip);
-
-static void IdMethodSignature(CompileUnit *cu, Signature *sign);
-static void id(CompileUnit *cu, bool canAssign);
-static void StringInterpolation(CompileUnit *cu, bool canAssign UNUSED);
-static void Boolean(CompileUnit *cu, bool canAssign UNUSED);
-static void Null(CompileUnit *cu, bool canAssign UNUSED);
-static void This(CompileUnit *cu, bool canAssign UNUSED);
-static void super(CompileUnit *cu, bool canAssign);
-static void Parentheses(CompileUnit *cu, bool canAssign UNUSED);
-static void ListLiteral(CompileUnit *cu, bool canAssign UNUSED);
-static void Subscript(CompileUnit *cu, bool canAssign);
-static void SubscriptMethodSignature(CompileUnit *cu, Signature *sign);
-static void CallEntry(CompileUnit *cu, bool canAssign);
-static void MapLiteral(CompileUnit *cu, bool canAssign UNUSED);
-static void LogicOr(CompileUnit *cu, bool canAssign UNUSED);
-static void LogicAnd(CompileUnit *cu, bool canAssign UNUSED);
-static void Condition(CompileUnit *cu, bool canAssign UNUSED);
 
 #endif //_COMPILER_H_
