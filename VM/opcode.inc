@@ -7,7 +7,7 @@
 操作码的行为是一定的,对栈的影响也是一定的,
 因此在定义操作码时,以slot为单位,一并描述操作码对栈空间大小的影响.
 下面以此格式定义操作码及相应影响:
-操作码 栈空间大小的影响(注意,不是操作数)
+   操作码 栈空间大小的影响(!!!注意,不是操作数)
 *************************************************/
 OPCODE_SLOTS(LOAD_CONSTANT, 1)
 OPCODE_SLOTS(PUSH_NULL, 1)
@@ -67,7 +67,7 @@ OPCODE_SLOTS(CLOSE_UPVALUE, -1)
 OPCODE_SLOTS(RETURN, 0)
 OPCODE_SLOTS(CREATE_CLOSURE, 1)
 OPCODE_SLOTS(CONSTRUCT, 0)
-OPCODE_SLOTS(CREATE_CLASS, -1)
+OPCODE_SLOTS(CREATE_CLASS, -1) 
 OPCODE_SLOTS(INSTANCE_METHOD, -2)
 OPCODE_SLOTS(STATIC_METHOD, -2)
 OPCODE_SLOTS(END, 0)

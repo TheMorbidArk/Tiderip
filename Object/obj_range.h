@@ -1,19 +1,12 @@
-//
-// Created by TheMorbidArk on 2022/9/25.
-//
-
-#ifndef VANTIDEL_OBJ_RANGE_H
-#define VANTIDEL_OBJ_RANGE_H
-
+#ifndef _OBJECT_RANGE_H
+#define _OBJECT_RANGE_H
 #include "class.h"
 
-typedef struct
-{
-	ObjHeader objHeader;
-	int from;
-	int to;
-} ObjRange;
+typedef struct {
+   ObjHeader objHeader;
+   int from;   //范围的起始
+   int to;     //范围的结束
+} ObjRange;    //range对象
 
-ObjRange *NewObjRange( VM *vm, int from, int to );
-
-#endif //VANTIDEL_OBJ_RANGE_H
+ObjRange* newObjRange(VM* vm, int from, int to);
+#endif
