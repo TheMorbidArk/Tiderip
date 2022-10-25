@@ -10,6 +10,8 @@ char *ReadFile(const char *sourceFile);
 VMResult ExecuteModule(VM *vm, Value moduleName, const char *moduleCode);
 int GetIndexFromSymbolTable(SymbolTable *table, const char *symbol, uint32_t length);
 int AddSymbol(VM *vm, SymbolTable *table, const char *symbol, uint32_t length);
+static ObjThread *LoadModule(VM *vm, Value moduleName, const char *moduleCode);
+static ObjModule *GetModule(VM *vm, Value moduleName);
 
 void BuildCore(VM *vm);
 void BindMethod(VM *vm, Class *class, uint32_t index, Method method);

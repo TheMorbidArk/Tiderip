@@ -7,65 +7,53 @@
 #include "core.h"
 
 //执行脚本文件, 输出Token信息
-static void RunFile_Token( const char *path )
-{
-	const char *lastSlash = strrchr( path, '/' );
-	if ( lastSlash != NULL)
-	{
-		char *root = ( char * )malloc( lastSlash - path + 2 );
-		memcpy( root, path, lastSlash - path + 1 );
-		root[ lastSlash - path + 1 ] = '\0';
+static void RunFile_Token(const char *path) {
+	const char *lastSlash = strrchr(path, '/');
+	if (lastSlash != NULL) {
+		char *root = (char *)malloc(lastSlash - path + 2);
+		memcpy(root, path, lastSlash - path + 1);
+		root[lastSlash - path + 1] = '\0';
 		rootDir = root;
 	}
 
-	VM *vm = NewVM( );
-	const char *sourceCode = ReadFile( path );
+	VM *vm = NewVM();
+	const char *sourceCode = ReadFile(path);
 
 	struct parser parser;
-	InitParser( vm, &parser, path, sourceCode, NULL);  //此NULL是临时的
+	InitParser(vm, &parser, path, sourceCode, NULL);  //此NULL是临时的
 
 #include "token.list"
-	while ( parser.curToken.type != TOKEN_EOF )
-	{
-		GetNextToken( &parser );
-		printf( "%dL: %s [", parser.curToken.lineNo, tokenArray[ parser.curToken.type ] );
+	while (parser.curToken.type != TOKEN_EOF) {
+		GetNextToken(&parser);
+		printf("%dL: %s [", parser.curToken.lineNo, tokenArray[parser.curToken.type]);
 		uint32_t idx = 0;
-		while ( idx < parser.curToken.length )
-		{
-			printf( "%c", *( parser.curToken.start + idx++ ));
+		while (idx < parser.curToken.length) {
+			printf("%c", *(parser.curToken.start + idx++));
 		}
-		printf( "]\n" );
+		printf("]\n");
 	}
 }
 
-void RunFile( const char *path )
-{
-	const char *lastSlash = strrchr( path, '/' );
-	if ( lastSlash != NULL)
-	{
-		char *root = ( char * )malloc( lastSlash - path + 2 );
-		memcpy( root, path, lastSlash - path + 1 );
-		root[ lastSlash - path + 1 ] = '\0';
+void RunFile(const char *path) {
+	const char *lastSlash = strrchr(path, '/');
+	if (lastSlash != NULL) {
+		char *root = (char *)malloc(lastSlash - path + 2);
+		memcpy(root, path, lastSlash - path + 1);
+		root[lastSlash - path + 1] = '\0';
 		rootDir = root;
 	}
 
-	VM* vm = NewVM();
-
-	/* TODO 原生方法未实现，脚本语言代码能通过编译但无法运行 */
-	printf("There is something to do...\n"); exit(0);
-
-	const char* sourceCode = ReadFile(path);
+	VM *vm = NewVM();
+	const char *sourceCode = ReadFile(path);
 	ExecuteModule(vm, OBJ_TO_VALUE(NewObjString(vm, path, strlen(path))), sourceCode);
+
 }
 
-int main( int argc, const char **argv )
-{
-	if ( argc == 1 )
-	{ ;
-	}
-	else
-	{
-		RunFile( argv[ 1 ] );
+int main(int argc, const char **argv) {
+	if (argc == 1) {
+		;
+	} else {
+		RunFile(argv[1]);
 	}
 	return 0;
 }
