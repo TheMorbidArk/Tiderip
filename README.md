@@ -1,4 +1,4 @@
-# VanTide-Scripting-Language
+# VanTide Scripting Language
 
 ## 介绍
 
