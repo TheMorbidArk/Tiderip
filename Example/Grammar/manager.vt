@@ -1,15 +1,15 @@
 
 import employee for Employee
-tide xh =  Employee.new("xiaohong", "female", 20, 6000)
+var xh =  Employee.new("xiaohong", "female", 20, 6000)
 System.print(xh.salary)
 
-tide xm =  Employee.new("xiaoming", "male", 23, 8000)
+var xm =  Employee.new("xiaoming", "male", 23, 8000)
 System.print(xm.salary)
 
 System.print(Employee.employeeNum)
 
 class Manager < Employee {
-   tide bonus
+   var bonus
    bonus=(v) {
       bonus = v 
    }
@@ -25,9 +25,9 @@ class Manager < Employee {
 
 }
 
-function employeeInfo() {
+fun employeeInfo() {
    System.print("number of employee:" + Employee.employeeNum.toString)
-   tide employeeTitle = Map.new()
+   var employeeTitle = Map.new()
    employeeTitle["xh"] = "rd"
    employeeTitle["xm"] = "op"
    employeeTitle["lw"] = "manager"
@@ -37,49 +37,49 @@ function employeeInfo() {
       System.print(k + " -> " + employeeTitle[k])
    }
 
-   tide employeeHeight = {
+   var employeeHeight = {
       "xh": 170, 
       "xm": 172,
       "lw": 168,
       "lz": 173
    }
-   tide totalHeight = 0
+   var totalHeight = 0
    for v (employeeHeight.values) {
       totalHeight = totalHeight + v   
    }
    System.print("averageHeight: %(totalHeight / employeeHeight.count)")
 
-   tide allEmployee = ["xh", "xm", "lw", "lz"]
+   var allEmployee = ["xh", "xm", "lw", "lz"]
    for e (allEmployee) {
       System.print(e)
    }
      
    allEmployee.add("xl")
    System.print("all employee are:%(allEmployee.toString)")
-   tide idx = 0
-   tide count = allEmployee.count
+   var idx = 0
+   var count = allEmployee.count
    while (idx < count) {
       System.print(allEmployee[idx])
       idx = idx + 1
    }
 
-   tide a = 3 + 5 > 9 - 3  ? "yes" : "no"
+   var a = 3 + 5 > 9 - 3  ? "yes" : "no"
    if (a.endsWith("s")) {
       System.print(System.clock)
    } else {
       System.print("error!!!!!")
    }
 
-   tide str = "hello, world."
+   var str = "hello, world."
    System.print(str[-1..0])
 }
 
-tide lw = Manager.new("laowang", "male", 35, 13000, 2000)
+var lw = Manager.new("laowang", "male", 35, 13000, 2000)
 System.print(lw.salary)
 lw.bonus=3100
 System.print(lw.salary)
-tide lz = Manager.new("laozheng", "male", 36, 15000, 2300)
+var lz = Manager.new("laozheng", "male", 36, 15000, 2300)
 System.print(lz.salary)
 
-tide thread = Thread.new(employeeInfo)
+var thread = Thread.new(employeeInfo)
 thread.call()

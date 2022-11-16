@@ -1,9 +1,9 @@
 class Employee {
-   tide name
-   tide gender
-   tide age
-   tide salary
-   static tide employeeNum = 0
+   var name
+   var gender
+   var age
+   var salary
+   static var employeeNum = 0
    new(n, g, a, s) {
       name = n
       gender = g
