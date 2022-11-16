@@ -21,4 +21,7 @@
 - < GetIndexFromSymbolTable > 函数使用红黑树优化搜索算法
     - 符号表采用红黑树算法重构
     - 使算法运行速度从 **O(n) => O(log<sup>n</sup>)**
-- 增加 < elif > 语法 
+    - [x] 增加 < elif > 语法
+
+## BUG
+< elif >可独立存在

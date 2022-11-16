@@ -2139,13 +2139,13 @@ static void compileMethod(CompileUnit *cu, Variable classVar, bool isStatic) {
 static void compileClassBody(CompileUnit *cu, Variable classVar) {
 
     if (matchToken(cu->curParser, TOKEN_STATIC)) {
-        if (matchToken(cu->curParser, TOKEN_VAR)) {  //处理静态域 "static var id"
+        if (matchToken(cu->curParser, TOKEN_TIDE)) {  //处理静态域 "static Tide id"
             compileVarDefinition(cu, true);
         } else {   //处理静态方法,"static methodName"
             compileMethod(cu, classVar, true);
         }
 
-    } else if (matchToken(cu->curParser, TOKEN_VAR)) {   //实例域
+    } else if (matchToken(cu->curParser, TOKEN_TIDE)) {   //实例域
         compileVarDefinition(cu, false);
     } else {  //类的方法
         compileMethod(cu, classVar, false);
@@ -2380,7 +2380,7 @@ static void compileProgram(CompileUnit *cu) {
         compileClassDefinition(cu);
     } else if (matchToken(cu->curParser, TOKEN_FUN)) {
         compileFunctionDefinition(cu);
-    } else if (matchToken(cu->curParser, TOKEN_VAR)) {
+    } else if (matchToken(cu->curParser, TOKEN_TIDE)) {
         compileVarDefinition(cu, cu->curParser->preToken.type == TOKEN_STATIC);
     } else if (matchToken(cu->curParser, TOKEN_IMPORT)) {
         compileImport(cu);

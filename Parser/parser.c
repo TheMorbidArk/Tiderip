@@ -16,10 +16,11 @@ struct keywordToken {
 
 //关键字查找表
 struct keywordToken keywordsToken[] = {
-        {"var",      3, TOKEN_VAR},
+            /* NOTE 添加新的Key(关键字)需在此添加形如 {"elif",     4, TOKEN_ELIF} 语句  */
+        {"Tide",      4, TOKEN_TIDE},
         {"fun",      3, TOKEN_FUN},
         {"if",       2, TOKEN_IF},
-        {"elif",       4, TOKEN_ELIF},
+        {"elif",     4, TOKEN_ELIF},
         {"else",     4, TOKEN_ELSE},
         {"true",     4, TOKEN_TRUE},
         {"false",    5, TOKEN_FALSE},

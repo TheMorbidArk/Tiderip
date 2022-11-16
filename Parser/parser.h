@@ -15,7 +15,7 @@ typedef enum {
     TOKEN_INTERPOLATION,     //内嵌表达式
 
     // 关键字(系统保留字)
-    TOKEN_VAR,           //'var'
+    TOKEN_TIDE,           //'Tide'
     TOKEN_FUN,           //'fun'
     TOKEN_IF,           //'if'
     TOKEN_ELSE,               //'else'
@@ -82,6 +82,7 @@ typedef enum {
 
     //文件结束标记,仅词法分析时使用
     TOKEN_EOF,           //'EOF'
+    /* NOTE 添加新的Key(关键字)需在此之后  */
     TOKEN_ELIF          //'elif'
 } TokenType;
 

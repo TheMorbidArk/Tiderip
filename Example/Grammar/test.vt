@@ -6,18 +6,18 @@
 System.print("Hello World")
 
 /* 变量定义 */
-var a = 5
-var b = 5.23
-var c = "abcd"
-var d = [1,2,3,4]
-var e = {
+Tide a = 5
+Tide b = 5.23
+Tide c = "abcd"
+Tide d = [1,2,3,4]
+Tide e = {
         "a":1,
         "b":2,
         "c":3
         }
 
 /* print 格式化输出 */
-// 形如 -> ("xxx%(var)")
+// 形如 -> ("xxx%(Tide)")
 // 其中var为变量
 System.print("A:%(a) B:%(b) C:%(c) \r\nD:%(d) \r\nE:%(e)")
 
@@ -28,7 +28,7 @@ fun Fun_1(a,b){
 }
 System.print("Fun_1(a,b):%(Fun_1("Fun","_Define"))")
 // 面向对象函数定义
-var Fun_2 = Fn.new{|a,b|
+Tide Fun_2 = Fn.new{|a,b|
     return a+b
 }
 System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
@@ -38,7 +38,7 @@ System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
 // 支持 return,break,continue
 fun Fun_3(){
     // if-elif-else
-    var x = 0
+    Tide x = 0
     if (x == 0){
         System.print("-x-")
     }elif(x == 1){
@@ -48,7 +48,7 @@ fun Fun_3(){
     }
 
     /* for */
-    var arr = ["H","e","l","l","o"]
+    Tide arr = ["H","e","l","l","o"]
     // 1. for-each
     System.print("for-each:")
     for i (arr){
@@ -61,7 +61,7 @@ fun Fun_3(){
     }
 
     /* while */
-    var idx = 0
+    Tide idx = 0
     System.print("While:")
     while(idx < 10){
         idx=idx+1
