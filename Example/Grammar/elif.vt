@@ -1,10 +1,2 @@
-Tide a = 0
-if(a == 1){
-    System.print("IF")
-}elif(a == 0){
-    System.print("ELIF")
-    System.print("ELSE")
-    System.println("ELSE")
-}else{
-    System.print("ELSE")
-}
+Tide a = System.input()
+System.println(a)

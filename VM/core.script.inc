@@ -306,4 +306,8 @@ static const char* coreModuleCode =
 "         writeString_(\"[invalid toString]\")\n"
 "      }\n"
 "   }\n"
+"   static input(){\n"
+"      Tide str = inputString_()\n"
+"      return str\n"
+"   }\n"
 "}\n";

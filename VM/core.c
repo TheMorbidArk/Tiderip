@@ -449,6 +449,15 @@ static void printString(const char *str) {
     fflush(stdout);
 }
 
+//输出字符串
+static const char* inputString() {
+    //输出到缓冲区后立即刷新
+    char *str;
+    scanf("%s", str);
+    fflush(stdout);
+    return (const char *)str;
+}
+
 //导入模块moduleName,主要是把编译模块并加载到vm->allModules
 static Value importModule(VM *vm, Value moduleName) {
     //若已经导入则返回NULL_VAL
@@ -1667,6 +1676,14 @@ static bool primSystemWriteString(VM *vm UNUSED, Value *args) {
     RET_VALUE(args[1]);
 }
 
+//System.inputString_(): 输出字符串args[1]
+static bool primSystemInputString(VM *vm UNUSED, Value *args UNUSED) {
+    const char *str = inputString();
+    ObjString *objString = newObjString(vm,str,strlen(str));
+    ASSERT(objString->value.start[objString->value.length] == '\0', "string isn`t terminated!");
+    RET_VALUE(OBJ_TO_VALUE(objString));
+}
+
 //执行模块
 VMResult executeModule(VM *vm, Value moduleName, const char *moduleCode) {
     ObjThread *objThread = loadModule(vm, moduleName, moduleCode);
@@ -1952,6 +1969,7 @@ void buildCore(VM *vm) {
     PRIM_METHOD_BIND(systemClass->objHeader.class, "importModule(_)", primSystemImportModule);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "getModuleVariable(_,_)", primSystemGetModuleVariable);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "writeString_(_)", primSystemWriteString);
+    PRIM_METHOD_BIND(systemClass->objHeader.class, "inputString_()", primSystemInputString);
 
     //在核心自举过程中创建了很多ObjString对象,创建过程中需要调用initObjHeader初始化对象头,
     //使其class指向vm->stringClass.但那时的vm->stringClass尚未初始化,因此现在更正.
