@@ -1,13 +1,13 @@
 import people for People
-fun fn() {
-   var p = People.new("xiaoming", "male")
+function fn() {
+   tide p = People.new("xiaoming", "male")
    p.sayHi()
 }
 
 class Family < People {
-   var father
-   var mother
-   var child
+   tide father
+   tide mother
+   tide child
    new(f, m, c) {
       father = f
       mother = m
@@ -16,7 +16,7 @@ class Family < People {
    }
 }
 
-var f = Family.new("wbf", "ls", "shine")
+tide f = Family.new("wbf", "ls", "shine")
 f.sayHi()
 
 fn()

@@ -4,7 +4,6 @@
 #include "parser.h"
 #include "vm.h"
 #include "core.h"
-
 #include<time.h>
 
 //执行脚本文件
@@ -23,7 +22,6 @@ static void runFile(const char *path) {
 }
 
 void LOGO() {
-
     char *logWord = LOG_VERSION;
     printf("%s", logWord);
 
@@ -35,8 +33,7 @@ int main(int argc, const char **argv) {
 
     LOGO();
 
-    if (argc == 1) {
-        ;
+    if (argc == 1) { ;
     } else {
 
         start_t = clock();

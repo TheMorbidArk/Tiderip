@@ -34,7 +34,7 @@ ObjString *newObjString(VM *vm, const char *str, uint32_t length) {
 		initObjHeader(vm, &objString->objHeader, OT_STRING, vm->stringClass);
 		objString->value.length = length;
 
-		//支持空字符串: str为null,length为0
+        //支持空字符串: str为null,length为0
 		//如果非空则复制其内容
 		if (length > 0) {
 			memcpy(objString->value.start, str, length);

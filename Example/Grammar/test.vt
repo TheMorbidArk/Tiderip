@@ -6,29 +6,29 @@
 System.print("Hello World")
 
 /* 变量定义 */
-var a = 5
-var b = 5.23
-var c = "abcd"
-var d = [1,2,3,4]
-var e = {
+tide a = 5
+tide b = 5.23
+tide c = "abcd"
+tide d = [1,2,3,4]
+tide e = {
         "a":1,
         "b":2,
         "c":3
         }
 
 /* print 格式化输出 */
-// 形如 -> ("xxx%(var)")
+// 形如 -> ("xxx%(tide)")
 // 其中var为变量
 System.print("A:%(a) B:%(b) C:%(c) \r\nD:%(d) \r\nE:%(e)")
 
 /* 函数定义 */
 // 传统模式下函数定义
-fun Fun_1(a,b){
+function Fun_1(a,b){
     return a+b
 }
 System.print("Fun_1(a,b):%(Fun_1("Fun","_Define"))")
 // 面向对象函数定义
-var Fun_2 = Fn.new{|a,b|
+tide Fun_2 = Fn.new{|a,b|
     return a+b
 }
 System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
@@ -36,9 +36,9 @@ System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
 /* if for while */
 // 仅支持在函数中使用
 // 支持 return,break,continue
-fun Fun_3(){
+function Fun_3(){
     // if-else =》 没有elif语句
-    var x = 0
+    tide x = 0
     if (x == 0){
         System.print("xxx")
     }else{
@@ -46,7 +46,7 @@ fun Fun_3(){
     }
 
     /* for */
-    var arr = ["H","e","l","l","o"]
+    tide arr = ["H","e","l","l","o"]
     // 1. for-each
     System.print("for-each:")
     for i (arr){
@@ -59,7 +59,7 @@ fun Fun_3(){
     }
 
     /* while */
-    var idx = 0
+    tide idx = 0
     System.print("While:")
     while(idx < 10){
         idx=idx+1
