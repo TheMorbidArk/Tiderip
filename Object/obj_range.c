@@ -5,9 +5,9 @@
 
 //新建range对象
 ObjRange *newObjRange(VM *vm, int from, int to) {
-	ObjRange *objRange = ALLOCATE(vm, ObjRange);
-	initObjHeader(vm, &objRange->objHeader, OT_RANGE, vm->rangeClass);
-	objRange->from = from;
-	objRange->to = to;
-	return objRange;
+    ObjRange *objRange = ALLOCATE(vm, ObjRange);
+    initObjHeader(vm, &objRange->objHeader, OT_RANGE, vm->rangeClass);
+    objRange->from = from;
+    objRange->to = to;
+    return objRange;
 }

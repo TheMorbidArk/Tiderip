@@ -1,5 +1,6 @@
 #ifndef _INCLUDE_COMMON_H
 #define _INCLUDE_COMMON_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -15,13 +16,13 @@ typedef struct class Class;
 
 #ifdef DEBUG
 #define ASSERT(condition, errMsg) \
-	  do {\
-	 if (!(condition)) {\
-		fprintf(stderr, "ASSERT failed! %s:%d In function %s(): %s\n", \
-		   __FILE__, __LINE__, __func__, errMsg); \
-		abort();\
-	 }\
-	  } while (0);
+      do {\
+     if (!(condition)) {\
+        fprintf(stderr, "ASSERT failed! %s:%d In function %s(): %s\n", \
+           __FILE__, __LINE__, __func__, errMsg); \
+        abort();\
+     }\
+      } while (0);
 #else
 #define ASSERT(condition, errMsg) ((void)0)
 #endif

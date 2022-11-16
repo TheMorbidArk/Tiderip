@@ -35,8 +35,7 @@ int main(int argc, const char **argv) {
 
     LOGO();
 
-    if (argc == 1) {
-        ;
+    if (argc == 1) { ;
     } else {
 
         start_t = clock();
