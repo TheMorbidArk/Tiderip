@@ -24,15 +24,6 @@ static void runFile(const char *path) {
 void LOGO() {
     char *logWord = LOG_VERSION;
     printf("%s", logWord);
-
-	printf("%s",i);
-	printf("%s",a);
-	printf("%s",b);
-	printf("%s",c);
-	printf("%s",d);
-	printf("%s",e);
-	printf("%s",f);
-	printf("%s",g);
 }
 
 int main(int argc, const char **argv) {
