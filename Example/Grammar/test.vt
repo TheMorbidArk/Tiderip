@@ -3,7 +3,7 @@
 
 // 基本输出函数
 // 支持转义字符 \0 \a \b \f \n \r \t \u \"
-System.print("Hello World")
+System.println("Hello World")
 
 /* 变量定义 */
 Tide a = 5
@@ -18,20 +18,20 @@ Tide e = {
 
 /* print 格式化输出 */
 // 形如 -> ("xxx%(Tide)")
-// 其中var为变量
-System.print("A:%(a) B:%(b) C:%(c) \r\nD:%(d) \r\nE:%(e)")
+// 其中Tide为变量
+System.println("A:%(a) B:%(b) C:%(c) \r\nD:%(d) \r\nE:%(e)")
 
 /* 函数定义 */
 // 传统模式下函数定义
 fun Fun_1(a,b){
     return a+b
 }
-System.print("Fun_1(a,b):%(Fun_1("Fun","_Define"))")
+System.println("Fun_1(a,b):%(Fun_1("Fun","_Define"))")
 // 面向对象函数定义
 Tide Fun_2 = Fn.new{|a,b|
     return a+b
 }
-System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
+System.println("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
 
 /* if for while */
 // 仅支持在函数中使用
@@ -40,33 +40,35 @@ fun Fun_3(){
     // if-elif-else
     Tide x = 0
     if (x == 0){
-        System.print("-x-")
+        System.println("-x-")
     }elif(x == 1){
-         System.print("0x0")
+         System.println("0x0")
     }else{
-        System.print("*o*")
+        System.println("*o*")
     }
 
     /* for */
     Tide arr = ["H","e","l","l","o"]
     // 1. for-each
-    System.print("for-each:")
+    System.println("for-each:")
     for i (arr){
-        System.print(i)
+        System.print(i+" ")
     }
+    System.println()
     // 2. range
-    System.print("index-range:")
+    System.println("index-range:")
     for i (0..4){
-        System.print(arr[i])
+        System.print(arr[i]+" ")
     }
+    System.println()
 
     /* while */
     Tide idx = 0
-    System.print("While:")
+    System.println("While:")
     while(idx < 10){
         idx=idx+1
     }
-    System.print(idx)
+    System.println(idx)
 
 }
 Fun_3()
