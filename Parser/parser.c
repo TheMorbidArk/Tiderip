@@ -19,6 +19,7 @@ struct keywordToken keywordsToken[] = {
         {"var",      3, TOKEN_VAR},
         {"fun",      3, TOKEN_FUN},
         {"if",       2, TOKEN_IF},
+        {"elif",       4, TOKEN_ELIF},
         {"else",     4, TOKEN_ELSE},
         {"true",     4, TOKEN_TRUE},
         {"false",    5, TOKEN_FALSE},

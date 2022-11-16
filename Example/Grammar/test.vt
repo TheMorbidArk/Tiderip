@@ -37,12 +37,14 @@ System.print("Fun_2(a,b):%(Fun_2.call("Class","_Fn"))")
 // 仅支持在函数中使用
 // 支持 return,break,continue
 fun Fun_3(){
-    // if-else =》 没有elif语句
+    // if-elif-else
     var x = 0
     if (x == 0){
-        System.print("xxx")
+        System.print("-x-")
+    }elif(x == 1){
+         System.print("0x0")
     }else{
-        System.print("ooo")
+        System.print("*o*")
     }
 
     /* for */

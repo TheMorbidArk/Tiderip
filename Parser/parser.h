@@ -81,7 +81,8 @@ typedef enum {
     TOKEN_QUESTION,       //'?'
 
     //文件结束标记,仅词法分析时使用
-    TOKEN_EOF           //'EOF'
+    TOKEN_EOF,           //'EOF'
+    TOKEN_ELIF          //'elif'
 } TokenType;
 
 typedef struct {

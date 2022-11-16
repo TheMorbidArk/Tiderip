@@ -1,0 +1,8 @@
+var a = 0
+if(a == 1){
+    System.print("IF")
+}elif(a == 0){
+    System.print("ELIF")
+}else{
+    System.print("ELSE")
+}
