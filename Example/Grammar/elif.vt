@@ -1,3 +1,2 @@
-Tide n = 12138
-Tide a = System.input("ID[%(n)]-Input String:")
-System.println("String is: %(a)")
+Tide n = Num.toNum("12344")
+System.println(n-1)

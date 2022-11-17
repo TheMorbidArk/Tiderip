@@ -1613,8 +1613,7 @@ static void compileIfStatment(CompileUnit *cu) {
                     TOKEN_RIGHT_PAREN, "missing ')' before '{' in if!");
 
     //若条件为假, if跳转到false分支的起始地址,现为该地址设置占位符
-    uint32_t falseBranchStart =
-            emitInstrWithPlaceholder(cu, OPCODE_JUMP_IF_FALSE);
+    uint32_t falseBranchStart = emitInstrWithPlaceholder(cu, OPCODE_JUMP_IF_FALSE);
 
     //编译then分支
     //代码块前后的'{'和'}'由compileStatment负责读取

@@ -1872,7 +1872,7 @@ void buildCore(VM *vm) {
     //绑定num类方法
     vm->numClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Num"));
     //类方法
-    PRIM_METHOD_BIND(vm->numClass->objHeader.class, "fromString(_)", primNumFromString);
+    PRIM_METHOD_BIND(vm->numClass->objHeader.class, "toNum(_)", primNumFromString);
     PRIM_METHOD_BIND(vm->numClass->objHeader.class, "pi", primNumPi);
     //实例方法
     PRIM_METHOD_BIND(vm->numClass, "+(_)", primNumPlus);
