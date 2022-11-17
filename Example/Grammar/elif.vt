@@ -1,3 +1,7 @@
 //==---- 期望实现以下内容 ----==//
-Tide a = System.input()
-System.println(a)
+Tide a = System.input("Input String:")
+//Tide a = System.input()
+System.println("String is: %(a)")
+//==---- 预期结果 ----==//
+//== Input String: qtrqwtq ==//
+//== tring is: qtrqwtq ==//

@@ -452,8 +452,8 @@ static void printString(const char *str) {
 static const char *inputString() {
     //输出到缓冲区后立即刷新
     char *str;
-    //scanf("%s", str);
     fgets(str,1024,stdin);
+    fflush(stdin);
     return (const char *)str;
 }
 

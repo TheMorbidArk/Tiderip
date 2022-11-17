@@ -310,4 +310,9 @@ static const char* coreModuleCode =
 "      Tide str = inputString_()\n"
 "      return str\n"
 "   }\n"
+"   static input(obj){\n"
+"      print(obj)\n"
+"      Tide str = inputString_()\n"
+"      return str\n"
+"   }\n"
 "}\n";
