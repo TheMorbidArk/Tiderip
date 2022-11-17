@@ -11,7 +11,6 @@
 #include "obj_list.h"
 #include "obj_map.h"
 #include <ctype.h>
-#include <math.h>
 #include <errno.h>
 #include <time.h>
 #include "unicodeUtf8.h"
@@ -450,12 +449,12 @@ static void printString(const char *str) {
 }
 
 //输出字符串
-static const char* inputString() {
+static const char *inputString() {
     //输出到缓冲区后立即刷新
-    char *str;
+    char *str = NULL;
     scanf("%s", str);
     fflush(stdout);
-    return (const char *)str;
+    return (const char *) str;
 }
 
 //导入模块moduleName,主要是把编译模块并加载到vm->allModules
@@ -1679,7 +1678,7 @@ static bool primSystemWriteString(VM *vm UNUSED, Value *args) {
 //System.inputString_(): 输出字符串args[1]
 static bool primSystemInputString(VM *vm UNUSED, Value *args UNUSED) {
     const char *str = inputString();
-    ObjString *objString = newObjString(vm,str,strlen(str));
+    ObjString *objString = newObjString(vm, str, strlen(str));
     ASSERT(objString->value.start[objString->value.length] == '\0', "string isn`t terminated!");
     RET_VALUE(OBJ_TO_VALUE(objString));
 }
