@@ -1,4 +1,3 @@
 //==---- 期望实现以下内容 ----==//
 Tide a = System.input()
-//Tide a = "qwer"
 System.println(a)
