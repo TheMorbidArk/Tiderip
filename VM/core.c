@@ -276,7 +276,7 @@ static ObjString *newObjStringFromSub(VM *vm, ObjString *sourceStr,
     uint8_t *dest = (uint8_t *) result->value.start;
     idx = 0;
     while (idx < count) {
-        int index = (int)(startIndex + idx * direction);
+        int index = (int) (startIndex + idx * direction);
         //解码,获取字符数据
         int codePoint = decodeUtf8(source + index, sourceStr->value.length - index);
         if (codePoint != -1) {
@@ -346,7 +346,7 @@ static int findString(ObjString *haystack, ObjString *needle) {
         if (lastChar == c &&
             memcmp(haystack->value.start + idx, needle->value.start, needleEnd) == 0) {
             //找到了就返回匹配的位置
-            return (int)idx;
+            return (int) idx;
         }
 
         //否则就向前滑动继续下一伦比较
@@ -448,13 +448,23 @@ static void printString(const char *str) {
     fflush(stdout);
 }
 
-//输出字符串
+char *fgetsNoEndline(char *str, int n, FILE *stream) {
+    char *ret = fgets(str, n, stream);
+    unsigned int l;
+    if (ret) {
+        l = strlen(str) - 1;
+        if (str[l] == '\n') str[l] = '\0';
+    }
+    return ret;
+}
+
+//输入字符串
 static const char *inputString() {
     //输出到缓冲区后立即刷新
     char *str;
-    fgets(str,1024,stdin);
+    fgetsNoEndline(str, 1024, stdin);
     fflush(stdin);
-    return (const char *)str;
+    return (const char *) str;
 }
 
 //导入模块moduleName,主要是把编译模块并加载到vm->allModules
@@ -1696,7 +1706,7 @@ int getIndexFromSymbolTable(SymbolTable *table, const char *symbol, uint32_t len
     while (index < table->count) {
         if (length == table->datas[index].length &&
             memcmp(table->datas[index].str, symbol, length) == 0) {
-            return (int)index;
+            return (int) index;
         }
         index++;
     }
@@ -1712,7 +1722,7 @@ int addSymbol(VM *vm, SymbolTable *table, const char *symbol, uint32_t length) {
     string.str[length] = '\0';
     string.length = length;
     StringBufferAdd(vm, table, string);
-    return (int)table->count - 1;
+    return (int) table->count - 1;
 }
 
 //确保符号已添加到符号表

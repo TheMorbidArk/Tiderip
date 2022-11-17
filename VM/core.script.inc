@@ -311,8 +311,8 @@ static const char* coreModuleCode =
 "      return str\n"
 "   }\n"
 "   static input(obj){\n"
-"      print(obj)\n"
-"      Tide str = inputString_()\n"
+"      writeObject_(obj)\n"
+"      Tide str = input()\n"
 "      return str\n"
 "   }\n"
 "}\n";
