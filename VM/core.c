@@ -1,18 +1,19 @@
 #include "core.h"
 #include <string.h>
 #include <sys/stat.h>
+#include <math.h>
+#include <ctype.h>
+#include <errno.h>
+#include <time.h>
 #include "utils.h"
 #include "vm.h"
 #include "obj_thread.h"
 #include "compiler.h"
 #include "core.script.inc"
-#include <math.h>
 #include "obj_range.h"
 #include "obj_list.h"
 #include "obj_map.h"
-#include <ctype.h>
-#include <errno.h>
-#include <time.h>
+
 #include "unicodeUtf8.h"
 
 char *rootDir = NULL;   //根目录
@@ -1695,7 +1696,7 @@ static bool primSystemInputString(VM *vm UNUSED, Value *args UNUSED) {
 
 //System.getRand(_,_): 返回区间内随机数
 static bool primSystemGetRand(VM *vm, Value *args) {
-    
+
     if (!validateIntValue(vm, VALUE_IS_NUM(args[1]))) {
         return false;
     }
