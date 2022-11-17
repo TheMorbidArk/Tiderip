@@ -315,4 +315,8 @@ static const char* coreModuleCode =
 "      Tide str = input()\n"
 "      return str\n"
 "   }\n"
+"   static rand(start,end){\n"
+"      Tide num = getRand(start,end)\n"
+"      return num\n"
+"   }\n"
 "}\n";

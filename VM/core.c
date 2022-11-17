@@ -1693,6 +1693,27 @@ static bool primSystemInputString(VM *vm UNUSED, Value *args UNUSED) {
     RET_VALUE(OBJ_TO_VALUE(objString));
 }
 
+//System.getRand(_,_): 返回区间内随机数
+static bool primSystemGetRand(VM *vm, Value *args) {
+    
+    if (!validateIntValue(vm, VALUE_IS_NUM(args[1]))) {
+        return false;
+    }
+
+    if (!validateIntValue(vm, VALUE_IS_NUM(args[2]))) {
+        return false;
+    }
+
+    int rands;
+    int start = VALUE_TO_NUM(args[1]);
+    int end = VALUE_TO_NUM(args[2]);
+    srand((unsigned) time(NULL));
+    rands = rand() % ((end - start + 1) + start);
+
+    RET_NUM(rands)
+
+}
+
 //执行模块
 VMResult executeModule(VM *vm, Value moduleName, const char *moduleCode) {
     ObjThread *objThread = loadModule(vm, moduleName, moduleCode);
@@ -1979,6 +2000,7 @@ void buildCore(VM *vm) {
     PRIM_METHOD_BIND(systemClass->objHeader.class, "getModuleVariable(_,_)", primSystemGetModuleVariable);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "writeString_(_)", primSystemWriteString);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "inputString_()", primSystemInputString);
+    PRIM_METHOD_BIND(systemClass->objHeader.class, "getRand(_,_)", primSystemGetRand);
 
     //在核心自举过程中创建了很多ObjString对象,创建过程中需要调用initObjHeader初始化对象头,
     //使其class指向vm->stringClass.但那时的vm->stringClass尚未初始化,因此现在更正.

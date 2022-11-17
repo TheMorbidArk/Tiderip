@@ -1,2 +1,2 @@
-Tide n = Num.toNum("12344")
-System.println(n-1)
+Tide n = System.rand(13,63)
+System.println(n)
