@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(VanTideL C)
+project(Tiderip C)
 
 set(CMAKE_C_STANDARD 11)
 add_definitions(-fgnu89-inline)
@@ -31,4 +31,4 @@ LINK_LIBRARIES(m)
 
 include_directories(include VM Parser Cli Object Compiler)
 
-add_executable(VanTideL ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
+add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
