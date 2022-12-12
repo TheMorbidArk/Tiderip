@@ -26,6 +26,11 @@ static void runCli(void) {
     char sourceLine[MAX_LINE_LEN];
     printf("Tiderip Version:%s\r\n", VERSION);
     while (true) {
+
+        /* TODO 添加 Linenoise 组件完善CLI运行 */
+        
+
+
         printf("-=)>> ");
         //若读取失败或者键入quit就退出循环
         if (!fgets(sourceLine, MAX_LINE_LEN, stdin) ||

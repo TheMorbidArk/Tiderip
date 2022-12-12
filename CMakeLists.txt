@@ -11,8 +11,9 @@ aux_source_directory(Parser PARSER)
 aux_source_directory(Cli CLI)
 aux_source_directory(Object OBJECT)
 aux_source_directory(Compiler COMPILER)
+aux_source_directory(Linenoise LINENOISE)
 # 显示源文件路径
-set(SCR_SOUCES_LIST ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER})
+set(SCR_SOUCES_LIST ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER} ${LINENOISE})
 message("\r\n-----[SCR_SOUCES_PATH]-----")
 foreach (SOURCE_PATH ${SCR_SOUCES_LIST})
     message("--> ${SOURCE_PATH}")
@@ -29,6 +30,6 @@ message("-----[END_MESSAGES]-----\r\n")
 
 LINK_LIBRARIES(m)
 
-include_directories(include VM Parser Cli Object Compiler)
+include_directories(include VM Parser Cli Object Compiler Linenoise)
 
 add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
