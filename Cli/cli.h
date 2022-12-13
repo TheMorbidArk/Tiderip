@@ -2,6 +2,8 @@
 #define _CLI_CLI_H
 
 #include <stdio.h>
+#include <string.h>
+#include "linenoise.h"
 
 #define VERSION "0.1.1"
 #define MAX_LINE_LEN 1024
@@ -26,6 +28,27 @@ void LOGO() {
                     "                                 .....                           ,:\r\n";
     printf("%s", logWord);
 
+}
+
+/* 添加自动补全信息 */
+void completion(const char *buf, linenoiseCompletions *lc) {
+    if (buf[0] == 'h') {
+        linenoiseAddCompletion(lc,"hello");
+        linenoiseAddCompletion(lc,"hello there");
+    }
+}
+/* 命令提示内容显示设置 */
+char *hints(const char *buf, int *color, int *bold) {
+    // 如果命令为 hello
+    if (!strcasecmp(buf,"hello")) {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " World";
+    }
+    return NULL;
 }
 
 #endif

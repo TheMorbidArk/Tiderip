@@ -23,22 +23,25 @@ static void runFile(const char *path) {
 //运行命令行
 static void runCli(void) {
     VM *vm = newVM();
-    char sourceLine[MAX_LINE_LEN];
     printf("Tiderip Version:%s\r\n", VERSION);
-    while (true) {
 
-        /* TODO 添加 Linenoise 组件完善CLI运行 */
-        
+    /* TODO 添加 Linenoise 组件完善CLI运行 */
+    char *line;
+    // 设置信息自动补全回调函数
+    linenoiseSetCompletionCallback(completion);
+    // 设置命令提示内容以及显示样式回调函数
+    linenoiseSetHintsCallback(hints);
+    // 历史命令加载
+    linenoiseHistoryLoad("history.vt");
+    // 命令动态监控
+    while((line = linenoise(">>> ")) != NULL) {
 
-
-        printf("-=)>> ");
-        //若读取失败或者键入quit就退出循环
-        if (!fgets(sourceLine, MAX_LINE_LEN, stdin) ||
-            memcmp(sourceLine, "exit", 4) == 0) {
-            break;
-        }
-        executeModule(vm, OBJ_TO_VALUE(newObjString(vm, "cli", 3)), sourceLine);
-        printf("\r\n");
+        executeModule(vm, OBJ_TO_VALUE(newObjString(vm, "cli", 3)), line);
+        // 添加命令至历史列表
+        linenoiseHistoryAdd(line);
+        // 保存命令至历史文件
+        linenoiseHistorySave("history.vt");
+        free(line);
     }
 }
 
