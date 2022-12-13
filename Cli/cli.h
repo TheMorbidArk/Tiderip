@@ -32,13 +32,16 @@ void LOGO() {
 
 /* 添加自动补全信息 */
 void completion(const char *buf, linenoiseCompletions *lc) {
+    /* TODO 添加关键字及内置函数自动补全信息 */
     if (buf[0] == 'h') {
         linenoiseAddCompletion(lc,"hello");
         linenoiseAddCompletion(lc,"hello there");
     }
+    /* TODO 添加变量及函数实时自动补全 */
 }
 /* 命令提示内容显示设置 */
 char *hints(const char *buf, int *color, int *bold) {
+    /* TODO 添加命令提示信息 */
     // 如果命令为 hello
     if (!strcasecmp(buf,"hello")) {
         // 命令字体颜色
