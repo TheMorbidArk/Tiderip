@@ -97,7 +97,15 @@ char *hints(const char *buf, int *color, int *bold) {
         *bold = 0;
         // 提示内容
         return " <FunName>(Arguments){}";
+    }else if (!strcasecmp(buf, "for")) {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <IndexName> (ValueName) {}";
     }
+
     return NULL;
 }
 
