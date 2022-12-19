@@ -73,8 +73,8 @@ char *hints(const char *buf, int *color, int *bold) {
 
     /**
      * Tide <Name> = <Value>
-     * if (E) {S}
-     * elif
+     * if (Expression) {Sentence}
+     * elif (Expression){}
      * else {}
      * for <IndexName> (ValueName) {}
      * fun <FunName>(Arguments){}
@@ -83,21 +83,53 @@ char *hints(const char *buf, int *color, int *bold) {
      */
 
     // 如果命令为 hello
-    if (!strcasecmp(buf, "Tide")) {
+    if (!strcasecmp(buf, "Tide"))
+    {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
         return " <Name> = <Value>";
-    } else if (!strcasecmp(buf, "fun")) {
+    }
+    else if (!strcasecmp(buf, "if"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " (Expression) {Sentence}";
+    }
+    else if (!strcasecmp(buf, "elif"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " (Expression) {}";
+    }
+    else if (!strcasecmp(buf, "else"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " {}";
+    }
+    else if (!strcasecmp(buf, "fun"))
+    {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
         return " <FunName>(Arguments){}";
-    }else if (!strcasecmp(buf, "for")) {
+    }
+    else if (!strcasecmp(buf, "for"))
+    {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
@@ -105,7 +137,24 @@ char *hints(const char *buf, int *color, int *bold) {
         // 提示内容
         return " <IndexName> (ValueName) {}";
     }
-
+    else if (!strcasecmp(buf, "import"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <ImportName>";
+    }
+    else if (!strcasecmp(buf, "class"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <ClassName> {}";
+    }
     return NULL;
 }
 
