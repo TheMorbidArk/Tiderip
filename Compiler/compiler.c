@@ -1619,7 +1619,8 @@ static void compileIfStatment(CompileUnit *cu) {
     //代码块前后的'{'和'}'由compileStatment负责读取
     compileStatment(cu);
 
-    if (matchToken(cu->curParser, TOKEN_ELIF)){
+Label_IF:
+    if (matchToken(cu->curParser, TOKEN_ELIF)) {
         uint32_t falseBranchEnd = emitInstrWithPlaceholder(cu, OPCODE_JUMP);
 
         patchPlaceholder(cu, falseBranchStart);
@@ -1636,10 +1637,10 @@ static void compileIfStatment(CompileUnit *cu) {
         patchPlaceholder(cu, falseBranchStart);
 
         patchPlaceholder(cu, falseBranchEnd);
-    }
 
-        //如果有else分支
-    if (matchToken(cu->curParser, TOKEN_ELSE)) {
+        goto Label_IF;
+
+    } else if (matchToken(cu->curParser, TOKEN_ELSE)) {  //如果有else分支
         //添加跳过else分支的跳转指令
         uint32_t falseBranchEnd = emitInstrWithPlaceholder(cu, OPCODE_JUMP);
 
