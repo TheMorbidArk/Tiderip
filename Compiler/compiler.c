@@ -1619,42 +1619,26 @@ static void compileIfStatment(CompileUnit *cu) {
     //代码块前后的'{'和'}'由compileStatment负责读取
     compileStatment(cu);
 
-    //如果有else分支
-    if (matchToken(cu->curParser, TOKEN_ELSE)) {
-        //添加跳过else分支的跳转指令
+    if (matchToken(cu->curParser, TOKEN_ELIF)){
         uint32_t falseBranchEnd = emitInstrWithPlaceholder(cu, OPCODE_JUMP);
 
-        //进入else分支编译之前,先回填falseBranchStart
         patchPlaceholder(cu, falseBranchStart);
 
-        //编译else分支
+        consumeCurToken(cu->curParser, TOKEN_LEFT_PAREN, "missing '(' after if!");
+        expression(cu, BP_LOWEST);   //生成计算if条件表达式的指令步骤
+        consumeCurToken(cu->curParser,
+                        TOKEN_RIGHT_PAREN, "missing ')' before '{' in if!");
+
+        falseBranchStart = emitInstrWithPlaceholder(cu, OPCODE_JUMP_IF_FALSE);
+
         compileStatment(cu);
 
-        //此时知道了false块的结束地址,回填falseBranchEnd
-        patchPlaceholder(cu, falseBranchEnd);
-
-    } else {   //若不包括else块
-        //此时falseBranchStart就是件为假时,需要跳过整个true分支的目标地址
         patchPlaceholder(cu, falseBranchStart);
+
+        patchPlaceholder(cu, falseBranchEnd);
     }
-}
 
-//编译elif语句
-static void compileElIfStatment(CompileUnit *cu) {
-    consumeCurToken(cu->curParser, TOKEN_LEFT_PAREN, "missing '(' after if!");
-    expression(cu, BP_LOWEST);   //生成计算elif条件表达式的指令步骤
-    consumeCurToken(cu->curParser,
-                    TOKEN_RIGHT_PAREN, "missing ')' before '{' in if!");
-
-    //若条件为假, elif跳转到false分支的起始地址,现为该地址设置占位符
-    uint32_t falseBranchStart =
-            emitInstrWithPlaceholder(cu, OPCODE_JUMP_IF_FALSE);
-
-    //编译then分支
-    //代码块前后的'{'和'}'由compileStatment负责读取
-    compileStatment(cu);
-
-    //如果有else分支
+        //如果有else分支
     if (matchToken(cu->curParser, TOKEN_ELSE)) {
         //添加跳过else分支的跳转指令
         uint32_t falseBranchEnd = emitInstrWithPlaceholder(cu, OPCODE_JUMP);
@@ -1976,8 +1960,6 @@ inline static void compileContinue(CompileUnit *cu) {
 static void compileStatment(CompileUnit *cu) {
     if (matchToken(cu->curParser, TOKEN_IF)) {
         compileIfStatment(cu);
-    } else if (matchToken(cu->curParser, TOKEN_ELIF)) {
-        compileElIfStatment(cu);
     } else if (matchToken(cu->curParser, TOKEN_WHILE)) {
         compileWhileStatment(cu);
     } else if (matchToken(cu->curParser, TOKEN_FOR)) {
