@@ -34,7 +34,11 @@ static void runCli(void) {
     // 历史命令加载
     linenoiseHistoryLoad("history.vt");
     // 命令动态监控
-    while((line = linenoise(">>> ")) != NULL) {
+    while ((line = linenoise(">>> ")) != NULL) {
+
+        if (!strncmp(line, "exit", 4)) {
+            exit(0);
+        }
 
         executeModule(vm, OBJ_TO_VALUE(newObjString(vm, "cli", 3)), line);
         // 添加命令至历史列表

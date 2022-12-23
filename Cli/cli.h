@@ -70,14 +70,90 @@ void completion(const char *buf, linenoiseCompletions *lc) {
 /* 命令提示内容显示设置 */
 char *hints(const char *buf, int *color, int *bold) {
     /* TODO 添加命令提示信息 */
+
+    /**
+     * Tide <Name> = <Value>
+     * if (Expression) {Sentence}
+     * elif (Expression){}
+     * else {}
+     * for <IndexName> (ValueName) {}
+     * fun <FunName>(Arguments){}
+     * import <ImportName>
+     * class <ClassName> {}
+     */
+
     // 如果命令为 hello
-    if (!strcasecmp(buf, "hello")) {
+    if (!strcasecmp(buf, "Tide"))
+    {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " World";
+        return " <Name> = <Value>";
+    }
+    else if (!strcasecmp(buf, "if"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " (Expression) {Sentence}";
+    }
+    else if (!strcasecmp(buf, "elif"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " (Expression) {}";
+    }
+    else if (!strcasecmp(buf, "else"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " {}";
+    }
+    else if (!strcasecmp(buf, "fun"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <FunName>(Arguments){}";
+    }
+    else if (!strcasecmp(buf, "for"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <IndexName> (ValueName) {}";
+    }
+    else if (!strcasecmp(buf, "import"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <ImportName>";
+    }
+    else if (!strcasecmp(buf, "class"))
+    {
+        // 命令字体颜色
+        *color = 35;
+        // 命令字体样式
+        *bold = 0;
+        // 提示内容
+        return " <ClassName> {}";
     }
     return NULL;
 }
