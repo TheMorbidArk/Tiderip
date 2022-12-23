@@ -98,11 +98,11 @@ int main(int argc, const char **argv) {
         } else if (!strcmp(argv[1], "-l") || !strcmp(argv[1], "--logo")) {
             LOGO();
             /* 开始编译 */
-            runFile(argv[1]);
+            runFile(argv[2]);
         } else if (!strcmp(argv[1], "-t") || !strcmp(argv[1], "--time")) {
             /* 开始编译 */
             start_t = clock();
-            runFile(argv[1]);
+            runFile(argv[2]);
             finish_t = clock();
             printf("> CPU Run Time: %lfs <\r\n", (double) (finish_t - start_t) / CLOCKS_PER_SEC);
         }
