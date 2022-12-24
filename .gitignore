@@ -53,8 +53,11 @@ dkms.conf
 
 # 配置文件 & 编译文件
 /cmake-build-debug/
+/out/
 /.idea/
 /build/
+CMakeSettings.json
+/.vs/
 
 # 可执行文件
 VanTide
