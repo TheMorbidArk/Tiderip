@@ -25,7 +25,6 @@ static void runCli(void) {
     VM *vm = newVM();
     printf("Tiderip Version:%s\r\n", VERSION);
 
-    /* TODO 添加 Linenoise 组件完善CLI运行 */
     char *line;
     // 设置信息自动补全回调函数
     linenoiseSetCompletionCallback(completion);

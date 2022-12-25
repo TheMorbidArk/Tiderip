@@ -1,4 +1,4 @@
-static const char* coreModuleCode = 
+static const char* coreModuleCode =
 "class Null {}\n"
 "class Bool {}\n"
 "class Num {}\n"
@@ -319,4 +319,17 @@ static const char* coreModuleCode =
 "      Tide num = getRand(start,end)\n"
 "      return num\n"
 "   }\n"
+"}\n"
+"class Regex{\n"
+"    static Tide pattern = \".*\"  // means 任意字符串\n"
+"    static setPattern(obj){\n"
+"        pattern = obj.toString\n"
+"    }\n"
+"    static getPattern(){\n"
+"        return pattern\n"
+"    }\n"
+"    static exec(obj){\n"
+"        Tide str = obj.toString\n"
+"        return regexParse_(pattern,str)\n"
+"    }\n"
 "}\n";

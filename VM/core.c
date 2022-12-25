@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <time.h>
+#include <regex.h>
 #include "utils.h"
 #include "vm.h"
 #include "obj_thread.h"
@@ -1715,6 +1716,35 @@ static bool primSystemGetRand(VM *vm, Value *args) {
 
 }
 
+static bool primRegexParse(VM *vm, Value *args) {
+    regex_t reg;    //定义一个正则实例
+    ObjString *objPattern = VALUE_TO_OBJSTR(args[1]); //定义模式串
+    ObjString *objBuf = VALUE_TO_OBJSTR(args[2]);   //定义待匹配串
+
+    char *pattern = objPattern->value.start;
+    char *buf = objBuf->value.start;
+
+    regcomp(&reg, pattern, REG_EXTENDED);    //编译正则模式串
+    const size_t nmatch = 1;    //定义匹配结果最大允许数
+    regmatch_t pmatch[1];   //定义匹配结果在待匹配串中的下标范围
+    int status = regexec(&reg, buf, nmatch, pmatch, 0); //匹配,status存储匹配结果(bool)
+
+    int len = (pmatch[0].rm_eo - pmatch[0].rm_so);
+    char retString[len];    //存储匹配结果
+
+    if (status == REG_NOMATCH) { //如果没匹配上
+        RET_NULL    // 返回null
+    } else if (status == 0) {  //如果匹配上了
+        for (int i = pmatch[0].rm_so, j = 0; i < pmatch[0].rm_eo; i++) {    //遍历输出匹配范围的字符串
+            retString[j++] = buf[i];
+        }
+    }
+    regfree(&reg);  //释放正则表达式
+
+    ObjString *objString = newObjString(vm, (const char *) retString, len);
+    RET_VALUE(OBJ_TO_VALUE(objString));
+}
+
 //执行模块
 VMResult executeModule(VM *vm, Value moduleName, const char *moduleCode) {
     ObjThread *objThread = loadModule(vm, moduleName, moduleCode);
@@ -2002,6 +2032,10 @@ void buildCore(VM *vm) {
     PRIM_METHOD_BIND(systemClass->objHeader.class, "writeString_(_)", primSystemWriteString);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "inputString_()", primSystemInputString);
     PRIM_METHOD_BIND(systemClass->objHeader.class, "getRand(_,_)", primSystemGetRand);
+
+    /* TODO 添加 Regex 正则表达库 */
+    Class *regexClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Regex"));
+    PRIM_METHOD_BIND(regexClass->objHeader.class, "regexParse_(_,_)", primRegexParse);
 
     //在核心自举过程中创建了很多ObjString对象,创建过程中需要调用initObjHeader初始化对象头,
     //使其class指向vm->stringClass.但那时的vm->stringClass尚未初始化,因此现在更正.
