@@ -1720,11 +1720,23 @@ static bool primRegexParse(VM *vm, Value *args) {
     regex_t reg;    //定义一个正则实例
     ObjString *objPattern = VALUE_TO_OBJSTR(args[1]); //定义模式串
     ObjString *objBuf = VALUE_TO_OBJSTR(args[2]);   //定义待匹配串
+    bool flagICASE = VALUE_IS_TRUE(args[3]);        // 是否匹配大小写
+    bool flagNEWLINE = VALUE_IS_TRUE(args[4]);      // 是否识别换行符
 
     char *pattern = objPattern->value.start;
     char *buf = objBuf->value.start;
 
-    regcomp(&reg, pattern, REG_EXTENDED);    //编译正则模式串
+    // Flag 解析
+    if (flagICASE == 1 && flagNEWLINE == 1) {
+        regcomp(&reg, pattern, REG_EXTENDED | REG_ICASE | REG_NEWLINE);    //编译正则模式串
+    } else if (flagICASE == 1 && flagNEWLINE != 1) {
+        regcomp(&reg, pattern, REG_EXTENDED | REG_ICASE);    //编译正则模式串
+    } else if (flagICASE != 1 && flagNEWLINE == 1) {
+        regcomp(&reg, pattern, REG_EXTENDED | REG_NEWLINE);    //编译正则模式串
+    } else {
+        regcomp(&reg, pattern, REG_EXTENDED);    //编译正则模式串
+    }
+
     const size_t nmatch = 1;    //定义匹配结果最大允许数
     regmatch_t pmatch[1];   //定义匹配结果在待匹配串中的下标范围
     int status = regexec(&reg, buf, nmatch, pmatch, 0); //匹配,status存储匹配结果(bool)
@@ -2035,7 +2047,10 @@ void buildCore(VM *vm) {
 
     /* TODO 添加 Regex 正则表达库 */
     Class *regexClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Regex"));
-    PRIM_METHOD_BIND(regexClass->objHeader.class, "regexParse_(_,_)", primRegexParse);
+    PRIM_METHOD_BIND(regexClass->objHeader.class, "regexParse_(_,_,_,_)", primRegexParse);
+
+    const char soure[] = "fun a(){ return \"a\" }";
+    executeModule(vm, CORE_MODULE, soure);
 
     //在核心自举过程中创建了很多ObjString对象,创建过程中需要调用initObjHeader初始化对象头,
     //使其class指向vm->stringClass.但那时的vm->stringClass尚未初始化,因此现在更正.
