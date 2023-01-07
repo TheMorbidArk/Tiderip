@@ -1744,6 +1744,8 @@ static bool primRegexParse(VM *vm, Value *args) {
     int len = (pmatch[0].rm_eo - pmatch[0].rm_so);
     char retString[len];    //存储匹配结果
 
+    int retEndIndex = pmatch[0].rm_eo;
+
     if (status == REG_NOMATCH) { //如果没匹配上
         RET_NULL    // 返回null
     } else if (status == 0) {  //如果匹配上了
@@ -1753,8 +1755,18 @@ static bool primRegexParse(VM *vm, Value *args) {
     }
     regfree(&reg);  //释放正则表达式
 
+    int proLen = (int)(strlen(buf) - retEndIndex);
+    char processString[proLen];
+    for(int i = retEndIndex,j = 0; i < strlen(buf); i++){
+        processString[j++] = buf[i];
+    }
+
+    ObjList *objList = newObjList(vm, 0);
     ObjString *objString = newObjString(vm, (const char *) retString, len);
-    RET_VALUE(OBJ_TO_VALUE(objString));
+    ObjString *objProString = newObjString(vm, (const char *) processString, proLen);
+    ValueBufferAdd(vm, &objList->elements, OBJ_TO_VALUE(objString));    // 匹配结果
+    ValueBufferAdd(vm, &objList->elements, OBJ_TO_VALUE(objProString)); // 剩余字符串
+    RET_OBJ(objList);
 }
 
 //执行模块
