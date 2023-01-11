@@ -3,6 +3,7 @@ project(Tiderip C)
 
 set(CMAKE_C_STANDARD 11)
 add_definitions(-fgnu89-inline)
+add_definitions(-std=c11)
 
 # 定义源文件 *.c
 aux_source_directory(include INCLUDE)

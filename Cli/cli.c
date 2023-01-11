@@ -25,7 +25,6 @@ static void runCli(void) {
     VM *vm = newVM();
     printf("Tiderip Version:%s\r\n", VERSION);
 
-    /* TODO 添加 Linenoise 组件完善CLI运行 */
     char *line;
     // 设置信息自动补全回调函数
     linenoiseSetCompletionCallback(completion);
@@ -98,11 +97,11 @@ int main(int argc, const char **argv) {
         } else if (!strcmp(argv[1], "-l") || !strcmp(argv[1], "--logo")) {
             LOGO();
             /* 开始编译 */
-            runFile(argv[1]);
+            runFile(argv[2]);
         } else if (!strcmp(argv[1], "-t") || !strcmp(argv[1], "--time")) {
             /* 开始编译 */
             start_t = clock();
-            runFile(argv[1]);
+            runFile(argv[2]);
             finish_t = clock();
             printf("> CPU Run Time: %lfs <\r\n", (double) (finish_t - start_t) / CLOCKS_PER_SEC);
         }
