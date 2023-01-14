@@ -73,87 +73,72 @@ char *hints(const char *buf, int *color, int *bold) {
 
     /**
      * Tide <Name> = <Value>
-     * if (Expression) {Sentence}
-     * elif (Expression){}
-     * else {}
-     * for <IndexName> (ValueName) {}
-     * fun <FunName>(Arguments){}
+     * if (Expression) {Statement}
+     * elif (Expression) {Statement}
+     * else {Statement}
+     * for <IndexName> (ValueName) {Statement}
+     * fun <FunName> (Arguments) {Statement}
      * import <ImportName>
-     * class <ClassName> {}
+     * class <ClassName> {Statement}
      */
 
     // 如果命令为 hello
-    if (!strcasecmp(buf, "Tide"))
-    {
+    if (!strcasecmp(buf, "Tide")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
         return " <Name> = <Value>";
-    }
-    else if (!strcasecmp(buf, "if"))
-    {
+    } else if (!strcasecmp(buf, "if")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " (Expression) {Sentence}";
-    }
-    else if (!strcasecmp(buf, "elif"))
-    {
+        return " (Expression) {Statement}";
+    } else if (!strcasecmp(buf, "elif")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " (Expression) {}";
-    }
-    else if (!strcasecmp(buf, "else"))
-    {
+        return " (Expression) {Statement}";
+    } else if (!strcasecmp(buf, "else")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
         return " {}";
-    }
-    else if (!strcasecmp(buf, "fun"))
-    {
+    } else if (!strcasecmp(buf, "fun")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " <FunName>(Arguments){}";
-    }
-    else if (!strcasecmp(buf, "for"))
-    {
+        return " <FunName> (Arguments) {Statement}";
+    } else if (!strcasecmp(buf, "for")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " <IndexName> (ValueName) {}";
-    }
-    else if (!strcasecmp(buf, "import"))
-    {
+        return " <IndexName> (ValueName) {Statement}";
+    } else if (!strcasecmp(buf, "import")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
         return " <ImportName>";
-    }
-    else if (!strcasecmp(buf, "class"))
-    {
+    } else if (!strcasecmp(buf, "class")) {
         // 命令字体颜色
         *color = 35;
         // 命令字体样式
         *bold = 0;
         // 提示内容
-        return " <ClassName> {}";
+        return " <ClassName> {Statement}";
     }
     return NULL;
 }
