@@ -34,3 +34,17 @@ LINK_LIBRARIES(m)
 include_directories(include VM Parser Cli Object Compiler Linenoise)
 
 add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
+
+# 加载自动补全信息
+add_custom_target(
+        autoCompleteMode
+        COMMAND python3 ../Util/Script/cliScript.py
+)
+add_dependencies(Tiderip autoCompleteMode)
+
+# 运行插件系统
+#add_custom_target(
+#        PluginSystem
+#        COMMAND python3 ../Util/Script/coreScript.py
+#)
+#add_dependencies(Tiderip PluginSystem)
