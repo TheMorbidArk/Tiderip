@@ -32,114 +32,12 @@ void LOGO() {
 
 /* 添加自动补全信息 */
 void completion(const char *buf, linenoiseCompletions *lc) {
-    /* TODO 添加关键字及内置函数自动补全信息 */
-    if (buf[0] == 'T') {
-        linenoiseAddCompletion(lc, "Tide");
-    } else if (buf[0] == 'f') {
-        linenoiseAddCompletion(lc, "false");
-        linenoiseAddCompletion(lc, "for");
-        linenoiseAddCompletion(lc, "fun");
-    } else if (buf[0] == 'i') {
-        linenoiseAddCompletion(lc, "if");
-        linenoiseAddCompletion(lc, "is");
-        linenoiseAddCompletion(lc, "import");
-    } else if (buf[0] == 's') {
-        linenoiseAddCompletion(lc, "static");
-        linenoiseAddCompletion(lc, "super");
-    } else if (buf[0] == 'e') {
-        linenoiseAddCompletion(lc, "elif");
-        linenoiseAddCompletion(lc, "else");
-    } else if (buf[0] == 't') {
-        linenoiseAddCompletion(lc, "true");
-        linenoiseAddCompletion(lc, "this");
-    } else if (buf[0] == 'w') {
-        linenoiseAddCompletion(lc, "while");
-    } else if (buf[0] == 'b') {
-        linenoiseAddCompletion(lc, "break");
-    } else if (buf[0] == 'c') {
-        linenoiseAddCompletion(lc, "continue");
-        linenoiseAddCompletion(lc, "class");
-    } else if (buf[0] == 'r') {
-        linenoiseAddCompletion(lc, "return");
-    } else if (buf[0] == 'n') {
-        linenoiseAddCompletion(lc, "null");
-    }
-    /* TODO 添加变量及函数实时自动补全 */
+    #include "AutoCom_KeyWord.inc"
 }
 
 /* 命令提示内容显示设置 */
 char *hints(const char *buf, int *color, int *bold) {
-    /* TODO 添加命令提示信息 */
-
-    /**
-     * Tide <Name> = <Value>
-     * if (Expression) {Statement}
-     * elif (Expression) {Statement}
-     * else {Statement}
-     * for <IndexName> (ValueName) {Statement}
-     * fun <FunName> (Arguments) {Statement}
-     * import <ImportName>
-     * class <ClassName> {Statement}
-     */
-
-    // 如果命令为 hello
-    if (!strcasecmp(buf, "Tide")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " <Name> = <Value>";
-    } else if (!strcasecmp(buf, "if")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " (Expression) {Statement}";
-    } else if (!strcasecmp(buf, "elif")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " (Expression) {Statement}";
-    } else if (!strcasecmp(buf, "else")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " {}";
-    } else if (!strcasecmp(buf, "fun")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " <FunName> (Arguments) {Statement}";
-    } else if (!strcasecmp(buf, "for")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " <IndexName> (ValueName) {Statement}";
-    } else if (!strcasecmp(buf, "import")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " <ImportName>";
-    } else if (!strcasecmp(buf, "class")) {
-        // 命令字体颜色
-        *color = 35;
-        // 命令字体样式
-        *bold = 0;
-        // 提示内容
-        return " <ClassName> {Statement}";
-    }
+    #include "AutoCom_Hint.inc"
     return NULL;
 }
 

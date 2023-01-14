@@ -4,14 +4,14 @@
 import json
 
 # Debug Mode
-with open('autoCompletion.json') as fileData:
-    data = json.load(fileData)
-    print('- [OK] The Cli LineNoise Messages is Read')
-
-# RunTime
-# with open('../Util/Script/autoCompletion.json') as fileData:
+# with open('autoCompletion.json') as fileData:
 #     data = json.load(fileData)
 #     print('- [OK] The Cli LineNoise Messages is Read')
+
+# RunTime
+with open('../Util/Script/autoCompletion.json') as fileData:
+    data = json.load(fileData)
+    print('- [OK] The Cli LineNoise Messages is Read')
 
 KeyWordList = data["KeyWord"]
 Hints = data['hints']
@@ -180,8 +180,14 @@ resKeyWord = keyword_auto(KeyWordList)
 resHint = hint_auto(Command, Font)
 # 生成目标文件
 # TODO 数据写入<*.inc>文件
-# for i in keyword_auto(KeyWordList):
-#     print(i, end='')
-#
-# for i in hint_auto(Command, Font):
-#     print(i, end='')
+
+with open("../Cli/AutoCom_KeyWord.inc", "w") as AutoCom_KeyWord:
+    for i in resKeyWord:
+        AutoCom_KeyWord.write(i)
+
+with open("../Cli/AutoCom_Hint.inc", "w") as AutoCom_Hint:
+    for i in resHint:
+        AutoCom_Hint.write(i)
+
+print('- [OK] The Autocomplete information Loads')
+print('- [END] autoCompleteMode -')
