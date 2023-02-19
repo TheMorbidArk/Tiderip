@@ -191,3 +191,4 @@ with open("../Cli/AutoCom_Hint.inc", "w") as AutoCom_Hint:
 
 print('- [OK] The Autocomplete information Loads')
 print('- [END] autoCompleteMode -')
+print('--------------------------')

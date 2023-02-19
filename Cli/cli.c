@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "vm.h"
 #include "core.h"
-#include<time.h>
+#include <time.h>
 
 //执行脚本文件
 static void runFile(const char *path) {
@@ -90,7 +90,8 @@ int main(int argc, const char **argv) {
             runFile(argv[1]);
         }
     } else if (argc == 3) {    // 进入Debug模式
-        if (!strcmp(argv[1], "-d") || !strcmp(argv[1], "--debug") || !strcmp(argv[1], "-D") || !strcmp(argv[1], "--DEBUG")) {
+        if (!strcmp(argv[1], "-d") || !strcmp(argv[1], "--debug") || !strcmp(argv[1], "-D") ||
+            !strcmp(argv[1], "--DEBUG")) {
             /* TODO 进入DEBUG模式进行编译 */
             printf("DEBUG Mode Not Done,You can Update the program\r\n");
             return 0;

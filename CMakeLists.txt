@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 project(Tiderip C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_C_STANDARD 11)
 add_definitions(-fgnu89-inline)
 add_definitions(-std=c11)
