@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "linenoise.h"
 
 #define VERSION "0.1.1"
 #define MAX_LINE_LEN 1024
@@ -29,16 +28,4 @@ void LOGO() {
     printf("%s", logWord);
 
 }
-
-/* 添加自动补全信息 */
-void completion(const char *buf, linenoiseCompletions *lc) {
-    #include "AutoCom_KeyWord.inc"
-}
-
-/* 命令提示内容显示设置 */
-char *hints(const char *buf, int *color, int *bold) {
-    #include "AutoCom_Hint.inc"
-    return NULL;
-}
-
 #endif

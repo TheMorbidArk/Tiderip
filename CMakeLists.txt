@@ -14,9 +14,13 @@ aux_source_directory(Parser PARSER)
 aux_source_directory(Cli CLI)
 aux_source_directory(Object OBJECT)
 aux_source_directory(Compiler COMPILER)
-aux_source_directory(Linenoise LINENOISE)
+aux_source_directory(Extra/Linenoise Extra_LINENOISE)
+
 # 显示源文件路径
-set(SCR_SOUCES_LIST ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER} ${LINENOISE})
+set(SCR_SOUCES_LIST
+        ${Extra_LINENOISE}    # 第三方库
+        ${INCLUDE} ${VM} ${PARSER} ${CLI} ${OBJECT} ${COMPILER}     # 核心代码
+        )
 message("\r\n-----[SCR_SOUCES_PATH]-----")
 foreach (SOURCE_PATH ${SCR_SOUCES_LIST})
     message("--> ${SOURCE_PATH}")
@@ -33,14 +37,17 @@ message("-----[END_MESSAGES]-----\r\n")
 
 LINK_LIBRARIES(m)
 
-include_directories(include VM Parser Cli Object Compiler Linenoise)
+include_directories(Extra/Linenoise include VM Parser Cli Object Compiler Extension)
+
+add_subdirectory(Extension/Regex)
 
 add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
+target_link_libraries(Tiderip Regex)
 
 # 加载自动补全信息
 add_custom_target(
         autoCompleteMode
-        COMMAND python3 ../Util/Script/cliScript.py
+        COMMAND python3 ../Config/CliConfig/cliScript.py
 )
 add_dependencies(Tiderip autoCompleteMode)
 
