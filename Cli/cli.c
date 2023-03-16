@@ -5,6 +5,19 @@
 #include "core.h"
 #include <time.h>
 
+#include "linenoise.h"
+
+/* 添加自动补全信息 */
+void completion(const char *buf, linenoiseCompletions *lc) {
+    #include "AutoCom_KeyWord.inc"
+}
+
+/* 命令提示内容显示设置 */
+char *hints(const char *buf, int *color, int *bold) {
+    #include "AutoCom_Hint.inc"
+    return NULL;
+}
+
 //执行脚本文件
 static void runFile(const char *path) {
     const char *lastSlash = strrchr(path, '/');
