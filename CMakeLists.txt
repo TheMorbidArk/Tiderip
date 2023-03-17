@@ -53,10 +53,14 @@ LINK_LIBRARIES(m)
 
 include_directories(Extra/Linenoise include VM Core Parser Cli Object Compiler Extension)
 
+# No.subdirectory
 add_subdirectory(Extension/Regex)
+add_subdirectory(Extension/Test)
 
 add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
-target_link_libraries(Tiderip Regex)
+
+# No.libraries
+target_link_libraries(Tiderip Regex Test)
 
 # 加载自动补全信息
 add_custom_target(
@@ -66,8 +70,8 @@ add_custom_target(
 add_dependencies(Tiderip autoCompleteMode)
 
 # 运行插件系统
-#add_custom_target(
-#        PluginSystem
-#        COMMAND python3 ../Util/Script/coreScript.py
-#)
-#add_dependencies(Tiderip PluginSystem)
+add_custom_target(
+        PluginSystem
+        COMMAND python3 ../Config/ExtenConfig/extenScript.py
+)
+add_dependencies(Tiderip PluginSystem)

@@ -1,4 +1,3 @@
-static const char* coreModuleCode =
 "class Null {}\n"
 "class Bool {}\n"
 "class Num {}\n"

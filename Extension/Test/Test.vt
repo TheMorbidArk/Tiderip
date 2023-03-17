@@ -1,0 +1,5 @@
+class Test{
+    static getTest(){
+        System.println(testFun_())
+    }
+}

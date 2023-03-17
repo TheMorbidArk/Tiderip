@@ -16,14 +16,12 @@
 #include "core.List/core.List.h"
 #include "core.String/core.String.h"
 #include "core.Num/core.Num.h"
-#include "core.script.inc"
-/* Exten 扩展库 */
-#include "Regex/Regex.h"
-#include "exten.script.inc"
 #include "core.Null/core.Null.h"
 #include "core.Function/core.Function.h"
 #include "core.Thread/core.Thread.h"
 #include "core.Bool/core.Bool.h"
+/* Exten 扩展库 */
+#include "extenHeader.h"
 
 char *rootDir = NULL;   //根目录
 
@@ -643,6 +641,12 @@ void bindSuperClass(VM *vm, Class *subClass, Class *superClass)
     }
 }
 
+static const char *coreModuleCode =
+#include "core.script.inc"
+
+static const char *extenModuleCode =
+#include "exten.script.inc"
+
 //编译核心模块
 void buildCore(VM *vm)
 {
@@ -713,11 +717,12 @@ void buildCore(VM *vm)
     
     /* Exten 扩展库 */
     executeModule(vm, CORE_MODULE, extenModuleCode);
-    //Regex类
-    extenRegexBind(vm, coreModule);
+    
+    // 扩展库绑定至coreModule
+    #include "exten.Bind.inc"
     // 添加自定义函数
-    const char soure[] = "fun a(){ return \"a\" }";
-    executeModule(vm, CORE_MODULE, soure);
+//    const char soure[] = "fun a(){ return \"a\" }";
+//    executeModule(vm, CORE_MODULE, soure);
     
     //在核心自举过程中创建了很多ObjString对象,创建过程中需要调用initObjHeader初始化对象头,
     //使其class指向vm->stringClass.但那时的vm->stringClass尚未初始化,因此现在更正.
