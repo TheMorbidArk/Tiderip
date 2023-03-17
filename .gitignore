@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # 配置文件 & 编译文件
-/cmake-build-debug/
+/cmake-build-debug-*
 /out/
 /.idea/
 /build/
@@ -64,6 +64,7 @@ VanTide
 
 # Understand 配置文件
 /Tiderip.und/
+compile_commands.json
 
 # 自动生成文件
 /Cli/AutoCom_Hint.inc

@@ -1,0 +1,61 @@
+class Regex{
+    static Tide pattern = ".*"  // means 任意字符串
+    static Tide times = 1         // 匹配次数
+    static Tide flagICASE = false // Flag -> 是否识别大小写
+    static Tide flagNEWLINE = false// Flag -> 是否识别换行符
+    static getPattern(){
+        return pattern
+    }
+    static getTimes(){
+        return times
+    }
+    static getFlagICASE(){
+        return flagICASE
+    }
+    static getflagNEWLINE(){
+        return flagNEWLINE
+    }
+    static setPattern(obj){
+        pattern = obj.toString
+    }
+    static set(objPatern){
+        pattern = objPatern.toString
+    }
+    static set(objPatern,objTimes){
+        pattern = objPatern.toString
+        times = objTimes
+    }
+    static set(objPatern,objICASE,objNEWLINE){
+        pattern = objPatern.toString
+        flagICASE = objICASE
+        flagNEWLINE = objNEWLINE
+    }
+    static set(objPatern,objTimes,objICASE,objNEWLINE){
+        pattern = objPatern.toString
+        times = objTimes
+        flagICASE = objICASE
+        flagNEWLINE = objNEWLINE
+    }
+    static exec(obj){
+        Tide str = obj.toString
+        Tide strList = regexParse_(pattern,str,flagICASE,flagNEWLINE)
+        if(times == 1){
+            return strList[0]
+        } else {
+            Tide bufList = regexParse_(pattern,strList[1],flagICASE,flagNEWLINE)
+            Tide bufString = bufList[1]
+            strList.removeAt(1)
+            strList.add(bufList[0])
+            bufList.clear()
+            times = times - 1
+            while(times != 1){
+                bufList = regexParse_(pattern,bufString,flagICASE,flagNEWLINE)
+                strList.add(bufList[0])
+                bufString = bufList[1]
+                bufList.clear()
+                times = times - 1
+            }
+            return strList
+        }
+    }
+}

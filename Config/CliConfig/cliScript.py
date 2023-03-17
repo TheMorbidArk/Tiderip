@@ -1,4 +1,5 @@
 # --- 数据读取 --- #
+print('- [START] autoCompleteMode -')
 
 # 解析 Json 数据 -> 自动补全信息
 import json
@@ -9,7 +10,7 @@ import json
 #     print('- [OK] The Cli LineNoise Messages is Read')
 
 # RunTime
-with open('../Util/Script/autoCompletion.json') as fileData:
+with open('../Config/CliConfig/autoCompletion.json') as fileData:
     data = json.load(fileData)
     print('- [OK] The Cli LineNoise Messages is Read')
 

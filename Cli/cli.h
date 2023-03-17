@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "linenoise.h"
 
 #define VERSION "0.1.1"
 #define MAX_LINE_LEN 1024
 
-void LOGO() {
-
+void LOGO()
+{
+    
     char *logWord = "                         11111111111111111111\r\n"
                     "                    111111i                1111111\r\n"
                     "       :1        1111i                          11111\r\n"
@@ -27,18 +27,6 @@ void LOGO() {
                     "                       i111111111111111111111111111111111111111111111\r\n"
                     "                                 .....                           ,:\r\n";
     printf("%s", logWord);
-
+    
 }
-
-/* 添加自动补全信息 */
-void completion(const char *buf, linenoiseCompletions *lc) {
-    #include "AutoCom_KeyWord.inc"
-}
-
-/* 命令提示内容显示设置 */
-char *hints(const char *buf, int *color, int *bold) {
-    #include "AutoCom_Hint.inc"
-    return NULL;
-}
-
 #endif

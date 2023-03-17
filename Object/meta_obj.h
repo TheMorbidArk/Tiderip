@@ -3,14 +3,16 @@
 
 #include "obj_string.h"
 
-typedef struct {
+typedef struct
+{
     ObjHeader objHeader;
     SymbolTable moduleVarName;   //模块中的模块变量名
     ValueBuffer moduleVarValue;  //模块中的模块变量值
     ObjString *name;   //模块名
 } ObjModule;   //模块对象
 
-typedef struct {
+typedef struct
+{
     ObjHeader objHeader;
     //具体的字段
     Value fields[0];

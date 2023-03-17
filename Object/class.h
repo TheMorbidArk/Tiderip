@@ -7,7 +7,8 @@
 #include "obj_string.h"
 #include "obj_fn.h"
 
-typedef enum {
+typedef enum
+{
     MT_NONE,     //空方法类型,并不等同于undefined
     MT_PRIMITIVE,    //在vm中用c实现的原生方法
     MT_SCRIPT,    //脚本中定义的方法
@@ -59,12 +60,14 @@ typedef enum {
 //原生方法指针
 typedef bool (*Primitive)(VM *vm, Value *args);
 
-typedef struct {
+typedef struct
+{
     MethodType type;  //union中的值由type的值决定
-    union {
+    union
+    {
         //指向脚本方法所关联的c实现
         Primitive primFn;
-
+        
         //指向脚本代码编译后的ObjClosure或ObjFn
         ObjClosure *obj;
     };
@@ -73,7 +76,8 @@ typedef struct {
 DECLARE_BUFFER_TYPE(Method)
 
 //类是对象的模板
-struct class {
+struct class
+{
     ObjHeader objHeader;
     struct class *superClass; //父类
     uint32_t fieldNum;       //本类的字段数,包括基类的字段数
@@ -81,7 +85,8 @@ struct class {
     ObjString *name;   //类名
 };  //对象类
 
-typedef union {
+typedef union
+{
     uint64_t bits64;
     uint32_t bits32[2];
     double num;
