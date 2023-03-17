@@ -5,14 +5,14 @@
 #include <regex.h>
 #include <string.h>
 #include "utils.h"
-#include "vm.h"
-#include "compiler.h"
+#include "class.h"
 #include "obj_list.h"
 #include "core.h"
 
 #include "Regex.h"
 
-bool primRegexParse(VM *vm, Value *args) {
+bool primRegexParse(VM *vm, Value *args)
+{
     regex_t reg;    //定义一个正则实例
     ObjString *objPattern = VALUE_TO_OBJSTR(args[1]); //定义模式串
     ObjString *objBuf = VALUE_TO_OBJSTR(args[2]);   //定义待匹配串
@@ -23,13 +23,20 @@ bool primRegexParse(VM *vm, Value *args) {
     char *buf = objBuf->value.start;
     
     // Flag 解析
-    if (flagICASE == 1 && flagNEWLINE == 1) {
+    if (flagICASE == 1 && flagNEWLINE == 1)
+    {
         regcomp(&reg, pattern, REG_EXTENDED | REG_ICASE | REG_NEWLINE);    //编译正则模式串
-    } else if (flagICASE == 1 && flagNEWLINE != 1) {
+    }
+    else if (flagICASE == 1 && flagNEWLINE != 1)
+    {
         regcomp(&reg, pattern, REG_EXTENDED | REG_ICASE);    //编译正则模式串
-    } else if (flagICASE != 1 && flagNEWLINE == 1) {
+    }
+    else if (flagICASE != 1 && flagNEWLINE == 1)
+    {
         regcomp(&reg, pattern, REG_EXTENDED | REG_NEWLINE);    //编译正则模式串
-    } else {
+    }
+    else
+    {
         regcomp(&reg, pattern, REG_EXTENDED);    //编译正则模式串
     }
     
@@ -42,10 +49,14 @@ bool primRegexParse(VM *vm, Value *args) {
     
     int retEndIndex = pmatch[0].rm_eo;
     
-    if (status == REG_NOMATCH) { //如果没匹配上
+    if (status == REG_NOMATCH)
+    { //如果没匹配上
         RET_NULL    // 返回null
-    } else if (status == 0) {  //如果匹配上了
-        for (int i = pmatch[0].rm_so, j = 0; i < pmatch[0].rm_eo; i++) {    //遍历输出匹配范围的字符串
+    }
+    else if (status == 0)
+    {  //如果匹配上了
+        for (int i = pmatch[0].rm_so, j = 0; i < pmatch[0].rm_eo; i++)
+        {    //遍历输出匹配范围的字符串
             retString[j++] = buf[i];
         }
     }
@@ -53,14 +64,21 @@ bool primRegexParse(VM *vm, Value *args) {
     
     int proLen = (int)(strlen(buf) - retEndIndex);
     char processString[proLen];
-    for(int i = retEndIndex,j = 0; i < strlen(buf); i++){
+    for (int i = retEndIndex, j = 0; i < strlen(buf); i++)
+    {
         processString[j++] = buf[i];
     }
     
     ObjList *objList = newObjList(vm, 0);
-    ObjString *objString = newObjString(vm, (const char *) retString, len);
-    ObjString *objProString = newObjString(vm, (const char *) processString, proLen);
+    ObjString *objString = newObjString(vm, (const char *)retString, len);
+    ObjString *objProString = newObjString(vm, (const char *)processString, proLen);
     ValueBufferAdd(vm, &objList->elements, OBJ_TO_VALUE(objString));    // 匹配结果
     ValueBufferAdd(vm, &objList->elements, OBJ_TO_VALUE(objProString)); // 剩余字符串
     RET_OBJ(objList);
+}
+
+void extenRegexBind(VM *vm, ObjModule *coreModule)
+{
+    Class *regexClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Regex"));
+    PRIM_METHOD_BIND(regexClass->objHeader.class, "regexParse_(_,_,_,_)", primRegexParse);
 }

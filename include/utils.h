@@ -21,12 +21,14 @@ void *memManager(VM *vm, void *ptr, uint32_t oldSize, uint32_t newSize);
 
 uint32_t ceilToPowerOf2(uint32_t v);
 
-typedef struct {
+typedef struct
+{
     char *str;
     uint32_t length;
 } String;
 
-typedef struct {
+typedef struct
+{
     uint32_t length; //除结束'\0'之外的字符个数
     char start[];  //类似c99中的柔性数组
 } CharValue;  //字符串缓冲区
@@ -93,7 +95,8 @@ DECLARE_BUFFER_TYPE(Char)
 
 DECLARE_BUFFER_TYPE(Byte)
 
-typedef enum {
+typedef enum
+{
     ERROR_IO,
     ERROR_MEM,
     ERROR_LEX,
@@ -102,7 +105,7 @@ typedef enum {
 } ErrorType;
 
 void errorReport(void *parser,
-                 ErrorType errorType, const char *fmt, ...);
+    ErrorType errorType, const char *fmt, ...);
 
 void symbolTableClear(VM *, SymbolTable *buffer);
 

@@ -3,7 +3,8 @@
 
 #include "header_obj.h"
 
-typedef struct {
+typedef struct
+{
     ObjHeader objHeader;
     uint32_t hashCode;  //字符串的哈希值
     CharValue value;

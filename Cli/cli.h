@@ -7,8 +7,9 @@
 #define VERSION "0.1.1"
 #define MAX_LINE_LEN 1024
 
-void LOGO() {
-
+void LOGO()
+{
+    
     char *logWord = "                         11111111111111111111\r\n"
                     "                    111111i                1111111\r\n"
                     "       :1        1111i                          11111\r\n"
@@ -26,6 +27,6 @@ void LOGO() {
                     "                       i111111111111111111111111111111111111111111111\r\n"
                     "                                 .....                           ,:\r\n";
     printf("%s", logWord);
-
+    
 }
 #endif

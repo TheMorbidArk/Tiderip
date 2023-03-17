@@ -1,5 +1,5 @@
 {
-  "KeyWord" : [
+  "KeyWord": [
     "Tide",
     "fun",
     "if",
@@ -20,16 +20,16 @@
     "super",
     "import"
   ],
-  "hints" : {
+  "hints": {
     "command": {
-      "Tide" : " <Name> = <Value>",
-      "if" : " (Expression) {Statement}",
-      "elif" : " (Expression){Statement}",
-      "else" : " {Statement}",
-      "for" : " <IndexName> (ValueName) {Statement}",
-      "fun" : " <FunName> (Arguments) {Statement}",
-      "import" : " <ImportName>",
-      "class" : " <ClassName> {Statement}"
+      "Tide": " <Name> = <Value>",
+      "if": " (Expression) {Statement}",
+      "elif": " (Expression){Statement}",
+      "else": " {Statement}",
+      "for": " <IndexName> (ValueName) {Statement}",
+      "fun": " <FunName> (Arguments) {Statement}",
+      "import": " <ImportName>",
+      "class": " <ClassName> {Statement}"
     },
     "font": [
       35,

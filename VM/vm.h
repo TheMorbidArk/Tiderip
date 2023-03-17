@@ -9,18 +9,21 @@
 
 //为定义在opcode.inc中的操作码加上前缀"OPCODE_"
 #define OPCODE_SLOTS(opcode, effect) OPCODE_##opcode,
-typedef enum {
+typedef enum
+{
 #include "opcode.inc"
 } OpCode;
 #undef OPCODE_SLOTS
 
-typedef enum vmResult {
+typedef enum vmResult
+{
     VM_RESULT_SUCCESS,
     VM_RESULT_ERROR
 } VMResult;   //虚拟机执行结果
 //如果执行无误,可以将字符码输出到文件缓存,避免下次重新编译
 
-struct vm {
+struct vm
+{
     Class *classOfClass;
     Class *objectClass;
     Class *stringClass;

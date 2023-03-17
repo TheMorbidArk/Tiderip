@@ -4,7 +4,8 @@
 #include "class.h"
 #include "vm.h"
 
-typedef struct {
+typedef struct
+{
     ObjHeader objHeader;
     ValueBuffer elements;  //list中的元素
 } ObjList;  //list对象

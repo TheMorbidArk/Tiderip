@@ -47,7 +47,6 @@ extern char *rootDir;
    bindMethod(vm, classPtr, (uint32_t)globalIdx, method);\
 }
 
-
 char *readFile(const char *sourceFile);
 
 VMResult executeModule(VM *vm, Value moduleName, const char *moduleCode);
