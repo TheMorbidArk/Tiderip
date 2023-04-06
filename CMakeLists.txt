@@ -26,10 +26,11 @@ aux_source_directory(Core/core.Function coreFunction)
 aux_source_directory(Core/core.Thread coreThread)
 aux_source_directory(Core/core.Bool coreBool)
 aux_source_directory(Extra/Linenoise ExtraLinenoise)
+aux_source_directory(Extra/Tuibox ExtraTuibox)
 
 # 显示源文件路径
 set(SCR_SOUCES_LIST
-        ${ExtraLinenoise}    # 第三方库,框架
+        ${ExtraLinenoise} ${ExtraTuibox}    # 第三方库,框架
         ${INCLUDE} ${VM} ${CORE} ${PARSER} ${CLI} ${OBJECT} ${COMPILER}     # 核心代码
         # core 标准库
         ${coreSystem} ${coreFunction} ${coreNum} ${coreNull} ${coreBool}
@@ -51,7 +52,7 @@ message("-----[END_MESSAGES]-----\r\n")
 
 LINK_LIBRARIES(m)
 
-include_directories(Extra/Linenoise include VM Core Parser Cli Object Compiler Extension)
+include_directories(Extra/Linenoise Extra/Tuibox include VM Core Parser Cli Object Compiler Extension)
 
 # No.subdirectory
 add_subdirectory(Extension/Regex)

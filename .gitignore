@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # 配置文件 & 编译文件
-/cmake-build-debug-*
+/cmake-build-*
 /out/
 /.idea/
 /build/
@@ -69,3 +69,4 @@ compile_commands.json
 # 自动生成文件
 /Cli/AutoCom_Hint.inc
 /Cli/AutoCom_KeyWord.inc
+.cache

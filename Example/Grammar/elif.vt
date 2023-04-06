@@ -1,2 +1,0 @@
-Tide n = System.rand(13,63)
-System.println(n)

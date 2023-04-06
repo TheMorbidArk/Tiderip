@@ -20,6 +20,7 @@ char *hints(const char *buf, int *color, int *bold)
     return NULL;
 }
 
+Value moduleName;
 //执行脚本文件
 static void runFile(const char *path)
 {
@@ -34,7 +35,8 @@ static void runFile(const char *path)
     
     VM *vm = newVM();
     const char *sourceCode = readFile(path);
-    executeModule(vm, OBJ_TO_VALUE(newObjString(vm, path, strlen(path))), sourceCode);
+    moduleName = OBJ_TO_VALUE(newObjString(vm, path, strlen(path)));
+    executeModule(vm, moduleName, sourceCode);
 }
 
 //运行命令行
