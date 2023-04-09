@@ -27,41 +27,44 @@ aux_source_directory(Core/core.Thread coreThread)
 aux_source_directory(Core/core.Bool coreBool)
 aux_source_directory(Extra/Linenoise ExtraLinenoise)
 aux_source_directory(Extra/Tuibox ExtraTuibox)
+aux_source_directory(Extra/cJSON ExtraCJSON)
 
 # 显示源文件路径
 set(SCR_SOUCES_LIST
-        ${ExtraLinenoise} ${ExtraTuibox}    # 第三方库,框架
+        ${ExtraLinenoise} ${ExtraTuibox} ${ExtraCJSON}   # 第三方库,框架
         ${INCLUDE} ${VM} ${CORE} ${PARSER} ${CLI} ${OBJECT} ${COMPILER}     # 核心代码
         # core 标准库
         ${coreSystem} ${coreFunction} ${coreNum} ${coreNull} ${coreBool}
         ${coreRange} ${coreThread} ${coreMap} ${coreList} ${coreString}
         )
-message("\r\n-----[SCR_SOUCES_PATH]-----")
-foreach (SOURCE_PATH ${SCR_SOUCES_LIST})
-    message("--> ${SOURCE_PATH}")
-endforeach ()
-message("-----[END_MESSAGES]-----\r\n")
+message("-- [OK] Read the source file completely!")
 
 # 定义头文件 *.h
 file(GLOB_RECURSE SCR_HEADER_PATH "*.hpp" "*.h")
-message("-----[SCR_HEADER_PATH]-----")
-foreach (HEADER_PATH ${SCR_HEADER_PATH})
-    message("--> ${HEADER_PATH}")
-endforeach ()
-message("-----[END_MESSAGES]-----\r\n")
+message("-- [OK] Read the header file completely!")
+
+include_directories(Extra/Linenoise Extra/Tuibox Extra/cJSON)
+include_directories(include VM Core Parser Cli Object Compiler Extension)
+message("-- [OK] Set the header file completely!")
 
 LINK_LIBRARIES(m)
 
-include_directories(Extra/Linenoise Extra/Tuibox include VM Core Parser Cli Object Compiler Extension)
+add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
+
+message("-- Link Extension Libraries...")
+
+# Template Extension
+add_subdirectory(Extension/Template)
+target_link_libraries(Tiderip Template)
 
 # No.subdirectory
 add_subdirectory(Extension/Regex)
-add_subdirectory(Extension/Test)
-
-add_executable(Tiderip ${SCR_SOUCES_LIST} ${SCR_HEADER_PATH})
+add_subdirectory(Extension/Tui)
 
 # No.libraries
-target_link_libraries(Tiderip Regex Test)
+target_link_libraries(Tiderip Regex Tui)
+
+message("-- [OK] Linked Extension Libraries!")
 
 # 加载自动补全信息
 add_custom_target(

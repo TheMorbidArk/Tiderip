@@ -6,5 +6,4 @@
 
 extern Value getCoreClassValue(ObjModule *objModule, const char *name);
 
-bool primTestParse(VM *vm, Value *args);
-void extenTestBind(VM *vm, ObjModule *coreModule);
+void extenTuiBind(VM *vm, ObjModule *coreModule);

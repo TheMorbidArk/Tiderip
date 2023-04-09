@@ -69,4 +69,7 @@ compile_commands.json
 # 自动生成文件
 /Cli/AutoCom_Hint.inc
 /Cli/AutoCom_KeyWord.inc
+/Extension/extenHeader.h
+/Extension/exten.Bind.inc
+/Extension/exten.script.inc
 .cache

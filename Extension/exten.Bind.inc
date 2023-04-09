@@ -1,4 +1,6 @@
 	// Regex类
 	extenRegexBind(vm, coreModule);
-	// Test类
-	extenTestBind(vm, coreModule);
+	// Template类
+	extenTemplateBind(vm, coreModule);
+	// Tui类
+	extenTuiBind(vm, coreModule);

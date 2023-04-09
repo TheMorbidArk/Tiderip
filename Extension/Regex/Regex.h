@@ -6,5 +6,4 @@
 
 extern Value getCoreClassValue(ObjModule *objModule, const char *name);
 
-bool primRegexParse(VM *vm, Value *args);
 void extenRegexBind(VM *vm, ObjModule *coreModule);

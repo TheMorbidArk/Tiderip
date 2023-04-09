@@ -1,4 +1,4 @@
-class Test{
+class Tui{
     static getTest(){
         System.println(testFun_())
     }

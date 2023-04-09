@@ -2,13 +2,14 @@
 // Created by MorbidArk on 2023/3/17.
 //
 
+#include <math.h>
 #include <string.h>
 #include "obj_fn.h"
 #include "utils.h"
 #include "class.h"
 #include "core.h"
 
-#include "Test.h"
+#include "Tui.h"
 
 #include "Tuibox.h"
 
@@ -60,7 +61,7 @@ void stop()
     exit(0);
 }
 
-bool primTestParse(VM *vm, Value *args){
+bool primTuiDemo(VM *vm, Value *args){
 
     ui_new(0, &u);
 
@@ -100,6 +101,7 @@ bool primTestParse(VM *vm, Value *args){
     RET_NUM(123)
 }
 
+/* 测试调用脚本函数 */
 bool _primTestParse(VM *vm, Value *args){
 
     ObjFn *objFn = VALUE_TO_OBJFN(args[1]);
@@ -110,8 +112,8 @@ bool _primTestParse(VM *vm, Value *args){
     RET_NULL
 }
 
-void extenTestBind(VM *vm, ObjModule *coreModule){
-    Class *testClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Test"));
-    PRIM_METHOD_BIND(testClass->objHeader.class, "testFun_()", primTestParse);
+void extenTuiBind(VM *vm, ObjModule *coreModule){
+    Class *testClass = VALUE_TO_CLASS(getCoreClassValue(coreModule, "Tui"));
+    PRIM_METHOD_BIND(testClass->objHeader.class, "testFun_()", primTuiDemo);
     PRIM_METHOD_BIND(testClass->objHeader.class, "test_(_)", _primTestParse);
 }
