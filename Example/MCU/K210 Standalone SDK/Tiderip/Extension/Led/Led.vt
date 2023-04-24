@@ -1,0 +1,8 @@
+class Led{
+    static ledInit(){
+        ledInit_()
+    }
+    static ledSet(pin, value){
+        ledSet_(pin, value)
+    }
+}
