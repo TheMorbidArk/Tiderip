@@ -26,12 +26,11 @@ aux_source_directory(Core/core.Function coreFunction)
 aux_source_directory(Core/core.Thread coreThread)
 aux_source_directory(Core/core.Bool coreBool)
 aux_source_directory(Extra/Linenoise ExtraLinenoise)
-aux_source_directory(Extra/Tuibox ExtraTuibox)
 aux_source_directory(Extra/cJSON ExtraCJSON)
 
 # 显示源文件路径
 set(SCR_SOUCES_LIST
-        ${ExtraLinenoise} ${ExtraTuibox} ${ExtraCJSON}   # 第三方库,框架
+        ${ExtraLinenoise} ${ExtraCJSON}   # 第三方库,框架
         ${INCLUDE} ${VM} ${CORE} ${PARSER} ${CLI} ${OBJECT} ${COMPILER}     # 核心代码
         # core 标准库
         ${coreSystem} ${coreFunction} ${coreNum} ${coreNull} ${coreBool}
@@ -43,7 +42,7 @@ message("-- [OK] Read the source file completely!")
 file(GLOB_RECURSE SCR_HEADER_PATH "*.hpp" "*.h")
 message("-- [OK] Read the header file completely!")
 
-include_directories(Extra/Linenoise Extra/Tuibox Extra/cJSON)
+include_directories(Extra/Linenoise Extra/cJSON)
 include_directories(include VM Core Parser Cli Object Compiler Extension)
 message("-- [OK] Set the header file completely!")
 
@@ -59,10 +58,10 @@ target_link_libraries(Tiderip Template)
 
 # No.subdirectory
 add_subdirectory(Extension/Regex)
-add_subdirectory(Extension/Tui)
+add_subdirectory(Extension/PyT)
 
 # No.libraries
-target_link_libraries(Tiderip Regex Tui)
+target_link_libraries(Tiderip Regex PyT)
 
 message("-- [OK] Linked Extension Libraries!")
 

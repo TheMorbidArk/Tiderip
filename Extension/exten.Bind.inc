@@ -1,6 +1,6 @@
 	// Regex类
 	extenRegexBind(vm, coreModule);
-	// Tui类
-	extenTuiBind(vm, coreModule);
+	// PyT类
+	extenPyTBind(vm, coreModule);
 	// Template类
 	extenTemplateBind(vm, coreModule);

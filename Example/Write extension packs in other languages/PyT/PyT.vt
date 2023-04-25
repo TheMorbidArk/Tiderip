@@ -1,0 +1,5 @@
+class PyT{
+    static pyHello(){
+        pyHello_()
+    }
+}

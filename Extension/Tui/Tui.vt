@@ -1,5 +1,0 @@
-class Tui{
-    static getTest(){
-        System.println(testFun_())
-    }
-}
