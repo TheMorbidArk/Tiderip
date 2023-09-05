@@ -16,20 +16,5 @@
 > &emsp;&emsp;├─Parser  
 > &emsp;&emsp;└─VM
 
-## 优化方案
-
-- < GetIndexFromSymbolTable > 函数使用红黑树优化搜索算法
-    - 符号表采用红黑树算法重构
-    - 使算法运行速度从 **O(n) => O(log<sup>n</sup>)**
-    - [ ] 增加 < elif > 语法
-
-## BUG
-
-< elif >可独立存在
-
 ## Future
-
-- 增加队列
-- 优化CLI
-- 增加网络编程
-- 优化程序运行方式
+**详见projects界面**
